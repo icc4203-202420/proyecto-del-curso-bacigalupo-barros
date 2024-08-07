@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'faker'
 
 include FactoryBot::Syntax::Methods
 FactoryBot.define do
@@ -45,13 +46,16 @@ FactoryBot.define do
   end
 
   factory :user do
-    first_name { Faker::Name.name }
+    first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
+    password { '12345678' }
+    password_confirmation { password }
     age { rand(18..120) }
-    email { "#{first_name.gsub(/\s+/, "")}.#{last_name.gsub(/\s+/, "")}@example.com".downcase }
+    
+    email { Faker::Internet.email(name: "#{first_name} #{last_name}") }
     
     before(:create) do |user|
-      user.address = build(:address, user: user)
+      user.address ||= build(:address, user: user)
     end
   end
 

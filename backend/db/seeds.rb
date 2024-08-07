@@ -12,4 +12,4 @@
 ReviewCounter.create(count: 0)
 
 # Populate the DB with fake data
-Rake::Task['db:populate_fake_data'].invoke
+# Rake::Task['db:populate_fake_data'].invoke
