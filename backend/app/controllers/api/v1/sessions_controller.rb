@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class API::V1::SessionsController < Devise::SessionsController
   include ::RackSessionsFix
   respond_to :json

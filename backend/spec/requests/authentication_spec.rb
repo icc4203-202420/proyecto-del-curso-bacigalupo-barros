@@ -1,4 +1,5 @@
 # en spec/requests/authentication_spec.rb
+# https://sdrmike.medium.com/rails-7-api-only-app-with-devise-and-jwt-for-authentication-1397211fb97c
 require 'rails_helper'
 
 RSpec.describe 'Authentication', type: :request do
