@@ -1,4 +1,6 @@
 class API::V1::BeersController < ApplicationController
+  include ImageProcessing
+
   respond_to :json
   before_action :set_beer, only: [:show, :update, :destroy]
 
@@ -17,15 +19,19 @@ class API::V1::BeersController < ApplicationController
   
   # GET /beers/:id
   def show
-    render json: @beer.as_json.merge({ 
-      image_url: url_for(@beer.image), 
-      thumbnail_url: url_for(@beer.thumbnail) }),
-      status: :ok
+    if @beer.image.attached?
+      render json: @beer.as_json.merge({ 
+        image_url: url_for(@beer.image), 
+        thumbnail_url: url_for(@beer.thumbnail)}),
+        status: :ok
+    else
+      render json: @beer, status: :ok
+    end 
   end
 
   # POST /beers
   def create
-    @beer = Beer.new(beer_params.except(:image_base64, :thumbnail_base64))
+    @beer = Beer.new(beer_params.except(:image_base64))
     handle_image_attachment if beer_params[:image_base64]
 
     if @beer.save
@@ -53,11 +59,11 @@ class API::V1::BeersController < ApplicationController
   end
 
   private
-  include ImageProcessing
 
   def set_beer
-    @beer = Beer.find(params[:id])
-  end
+    @beer = Beer.find_by(id: params[:id])
+    render json: { error: 'Beer not found' }, status: :not_found if @beer.nil?
+  end  
 
   def beer_params
     params.require(:beer).permit(:name, :beer_type, 
@@ -68,6 +74,8 @@ class API::V1::BeersController < ApplicationController
 
   def handle_image_attachment
     decoded_image = decode_image(beer_params[:image_base64])
-    @beer.image.attach(io: decoded_image[:io], filename: decoded_image[:filename], content_type: decoded_image[:content_type])
+    @beer.image.attach(io: decoded_image[:io], 
+      filename: decoded_image[:filename], 
+      content_type: decoded_image[:content_type])
   end   
 end

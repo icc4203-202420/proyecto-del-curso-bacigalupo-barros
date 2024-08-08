@@ -27,14 +27,28 @@ RSpec.describe 'API::V1::Beers', type: :request do
   end
     
   describe 'POST /api/v1/beers' do
-    let(:valid_attributes) { { name: 'New Beer', beer_type: 'Ale', style: 'Stout', hop: 'Cascade', yeast: 'Ale yeast', malts: 'Barley', ibu: '50', alcohol: '6%', blg: '12', brand_id: create(:brand).id } }
+    let!(:brand) { create(:brand) }
+    let(:valid_attributes) {
+      {
+        name: 'New Beer',
+        beer_type: 'Ale',
+        style: 'Stout',
+        hop: 'Cascade',
+        yeast: 'Ale yeast',
+        malts: 'Barley',
+        ibu: '50',
+        alcohol: '6%',
+        blg: '12',
+        brand_id: brand.id
+      }
+    }
   
     context 'when the request is valid' do
       before { post api_v1_beers_path, params: { beer: valid_attributes } }
   
       it 'creates a beer' do
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)['name']).to eq('New Beer')
+        expect(JSON.parse(response.body)['beer']['name']).to eq('New Beer')
       end
     end
   
@@ -46,6 +60,37 @@ RSpec.describe 'API::V1::Beers', type: :request do
       end
     end
   end
+
+  describe 'POST /api/v1/beers' do
+    let(:brand) { create(:brand) }
+    let(:image_path) { Rails.root.join('spec/fixtures/files/test_image.jpg') }
+    let(:image_base64) { "data:image/jpeg;base64,#{Base64.strict_encode64(File.read(image_path))}"
+}
+    let(:valid_attributes) {
+      {
+        name: 'New Beer',
+        beer_type: 'Ale',
+        style: 'Stout',
+        hop: 'Cascade',
+        yeast: 'Ale yeast',
+        malts: 'Barley',
+        ibu: '50',
+        alcohol: '6%',
+        blg: '12',
+        brand_id: brand.id,
+        image_base64: image_base64
+      }
+    }
+  
+    context 'when the request is valid and includes an image' do
+      before { post api_v1_beers_path, params: { beer: valid_attributes } }
+  
+      it 'creates a beer with an image' do
+        expect(response).to have_http_status(:created)
+        expect(Beer.last.image).to be_attached
+      end
+    end
+  end  
   
   describe 'PUT /api/v1/beers/:id' do
     let(:beer) { create(:beer) }
@@ -56,7 +101,7 @@ RSpec.describe 'API::V1::Beers', type: :request do
   
       it 'updates the record' do
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)['name']).to eq('Updated Beer')
+        expect(JSON.parse(response.body)['beer']['name']).to eq('Updated Beer')
       end
     end
   end

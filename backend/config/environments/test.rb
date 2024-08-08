@@ -63,4 +63,8 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.active_storage.queue = :test
+
+  # Logging configuration
+  config.log_level = :debug
+  #config.logger = Logger.new($stdout)
 end
