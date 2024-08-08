@@ -3,7 +3,8 @@ class Bar < ApplicationRecord
   has_one_attached :image
 
   validates :name, presence: true
-  validates :image, content_type: ['image/png', 'image/jpg', 'image/jpeg'],
+  validates :image, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
+                                    message: 'must be a valid image format' },
                     size: { less_than: 5.megabytes }
 
   def thumbnail

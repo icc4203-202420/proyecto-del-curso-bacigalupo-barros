@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :bar do
-    name { "MyString" }
-    latitude { 1.5 }
-    longitude { 1.5 }
-    address { create(:address) }
+    name { Faker::Restaurant.name }
+    latitude { Faker::Address.latitude }
+    longitude { Faker::Address.longitude }
+    address
   end
 end

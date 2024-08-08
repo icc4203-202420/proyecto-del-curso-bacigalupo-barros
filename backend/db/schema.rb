@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_07_180000) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_07_221418) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -51,6 +51,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_180000) do
     t.index ["user_id"], name: "index_addresses_on_user_id"
   end
 
+  create_table "bars", force: :cascade do |t|
+    t.string "name"
+    t.float "latitude"
+    t.float "longitude"
+    t.integer "address_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_id"], name: "index_bars_on_address_id"
+  end
+
   create_table "beers", force: :cascade do |t|
     t.string "beer_type"
     t.datetime "created_at", null: false
@@ -64,6 +74,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_180000) do
     t.string "ibu"
     t.string "alcohol"
     t.string "blg"
+    t.float "avg_rating"
     t.index ["brand_id"], name: "index_beers_on_brand_id"
   end
 
@@ -115,10 +126,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_180000) do
   create_table "reviews", force: :cascade do |t|
     t.text "text"
     t.decimal "rating"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.integer "beer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["beer_id"], name: "index_reviews_on_beer_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
@@ -144,10 +155,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_07_180000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "countries"
   add_foreign_key "addresses", "users"
+  add_foreign_key "bars", "addresses"
   add_foreign_key "beers", "brands"
   add_foreign_key "brands", "breweries"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
-  add_foreign_key "reviews", "beers"
+  add_foreign_key "reviews", "beers", on_delete: :cascade
   add_foreign_key "reviews", "users"
 end

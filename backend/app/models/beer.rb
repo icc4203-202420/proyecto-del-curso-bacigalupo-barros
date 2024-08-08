@@ -2,13 +2,14 @@ class Beer < ApplicationRecord
   belongs_to :brand
   has_many :countries, through: :brand
   has_many :breweries, through: :brand
-  has_many :reviews
+  has_many :reviews, dependent: :destroy
   has_many :users, through: :reviews
-
+  has_one_attached :image
+  
   validates :name, presence: true
-  validates :image, content_type: ['image/png', 'image/jpg', 'image/jpeg'],
-                    size: { less_than: 5.megabytes }
-
+  validates :image, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
+                                    message: 'must be a valid image format' },
+                    size: { less_than: 5.megabytes }       
   def thumbnail
     image.variant(resize_to_limit: [200, 200]).processed
   end

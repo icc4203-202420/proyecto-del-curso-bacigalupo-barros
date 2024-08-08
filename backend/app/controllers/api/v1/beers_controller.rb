@@ -17,14 +17,19 @@ class API::V1::BeersController < ApplicationController
   
   # GET /beers/:id
   def show
-    render json: @beer
+    render json: @beer.as_json.merge({ 
+      image_url: url_for(@beer.image), 
+      thumbnail_url: url_for(@beer.thumbnail) }),
+      status: :ok
   end
 
   # POST /beers
   def create
-    @beer = Beer.new(beer_params)
+    @beer = Beer.new(beer_params.except(:image_base64, :thumbnail_base64))
+    handle_image_attachment if beer_params[:image_base64]
+
     if @beer.save
-      render json: @beer, status: :created, location: api_v1_beer_url(@beer)
+      render json: { beer: @beer, message: 'Beer created successfully.' }, status: :created
     else
       render json: @beer.errors, status: :unprocessable_entity
     end
@@ -32,8 +37,10 @@ class API::V1::BeersController < ApplicationController
 
   # PATCH/PUT /beers/:id
   def update
-    if @beer.update(beer_params)
-      render json: @beer
+    handle_image_attachment if beer_params[:image_base64]
+
+    if @beer.update(beer_params.except(:image_base64))
+      render json: { beer: @beer, message: 'Beer updated successfully.' }, status: :ok
     else
       render json: @beer.errors, status: :unprocessable_entity
     end
@@ -46,12 +53,21 @@ class API::V1::BeersController < ApplicationController
   end
 
   private
+  include ImageProcessing
 
   def set_beer
     @beer = Beer.find(params[:id])
   end
 
   def beer_params
-    params.require(:beer).permit(:name, :beer_type, :style, :hop, :yeast, :malts, :ibu, :alcohol, :blg, :brand_id, :avg_rating)
+    params.require(:beer).permit(:name, :beer_type, 
+      :style, :hop, :yeast, :malts, 
+      :ibu, :alcohol, :blg, :brand_id, :avg_rating,
+      :image_base64)
   end
+
+  def handle_image_attachment
+    decoded_image = decode_image(beer_params[:image_base64])
+    @beer.image.attach(io: decoded_image[:io], filename: decoded_image[:filename], content_type: decoded_image[:content_type])
+  end   
 end

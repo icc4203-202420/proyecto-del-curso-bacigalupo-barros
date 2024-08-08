@@ -4,6 +4,7 @@ class API::V1::BarsController < ApplicationController
 
   def index
     @bars = Bar.all
+    render json: @bars
   end
 
   def show
@@ -18,7 +19,7 @@ class API::V1::BarsController < ApplicationController
     handle_image_attachment if bar_params[:image_base64]
 
     if @bar.save
-      render json: { message: 'Bar created successfully.' }, status: :ok
+      render json: { bar: @bar, message: 'Bar created successfully.' }, status: :ok
     else
       render json: @bar.errors, status: :unprocessable_entity
     end
@@ -28,13 +29,15 @@ class API::V1::BarsController < ApplicationController
     handle_image_attachment if bar_params[:image_base64]
 
     if @bar.update(bar_params.except(:image_base64))
-      render json: { message: 'Bar updated successfully.' }, status: :ok
+      render json: { bar: @bar, message: 'Bar updated successfully.' }, status: :ok
     else
       render json: @bar.errors, status: :unprocessable_entity
     end
   end
 
   private
+  include ImageProcessing
+
   # Use callbacks to share common setup or constraints between actions.
   def set_bar
     @bar = Bar.find(params[:id])
@@ -47,18 +50,5 @@ class API::V1::BarsController < ApplicationController
   def handle_image_attachment
     decoded_image = decode_image(bar_params[:image_base64])
     @bar.image.attach(io: decoded_image[:io], filename: decoded_image[:filename], content_type: decoded_image[:content_type])
-  end 
-
-  def decode_image(data)
-    # Decodificar data, crear un StringIO o archivo temporal aquí
-    # Ejemplo básico, asume que la data viene como 'data:image/jpeg;base64,...'
-    header, data = data.split(',')
-    content_type, encoding = header.split(';').first.split(':').last.split('/')
-    filename = "upload.#{content_type}"
-    {
-      io: StringIO.new(Base64.decode64(data)),
-      filename: filename,
-      content_type: "image/#{content_type}"
-    }
   end  
 end
