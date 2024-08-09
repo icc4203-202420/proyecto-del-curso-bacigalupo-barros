@@ -5,6 +5,9 @@ class Beer < ApplicationRecord
   has_many :reviews, dependent: :destroy
   has_many :users, through: :reviews
   has_one_attached :image
+
+  has_many :bars_beers
+  has_many :bars, through: :bars_beers  
   
   validates :name, presence: true
   validates :image, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
