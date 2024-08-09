@@ -53,6 +53,7 @@ group :test do
   gem 'database_cleaner-active_record'
 end
 
+gem 'activerecord-import'
 gem "devise"
 gem "devise-jwt"
 gem 'jsonapi-serializer'
