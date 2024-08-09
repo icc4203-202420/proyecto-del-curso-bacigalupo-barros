@@ -1,15 +1,20 @@
-FROM node:20 AS build
+# Dockerfile.dev
+FROM node:22
 
+# Directorio de trabajo en el contenedor
 WORKDIR /app
 
-COPY package*.json ./
+# Copiar los archivos de configuración del proyecto
+COPY package.json yarn.lock ./
 
-RUN npm install
+# Instalar dependencias
+RUN yarn install
 
-RUN npm install -g vite
-
+# Copiar todos los archivos del proyecto
 COPY . .
 
-EXPOSE 3001
+# Exponer el puerto 3000 para acceso desde el host
+EXPOSE 3000
 
-CMD [ "npm", "run", "dev" ]
+# Comando para iniciar la aplicación
+CMD ["yarn", "start"]
