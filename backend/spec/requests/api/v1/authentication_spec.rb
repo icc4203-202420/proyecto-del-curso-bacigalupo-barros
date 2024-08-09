@@ -10,6 +10,7 @@ RSpec.describe 'API::V1::Authentication', type: :request do
           email: 'test@example.com',
           first_name: 'John',
           last_name: 'Doe',
+          handle: 'jdoe342',
           password: 'password',
           password_confirmation: 'password'
         }

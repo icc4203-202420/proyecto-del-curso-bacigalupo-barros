@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   validates :first_name, :last_name, presence: true, length: { minimum: 2 }
   validates :email, email: true
+  validates :handle, presence: true, uniqueness: true, length: { minimum: 3 }
+  
   has_many :reviews
   has_many :beers, through: :reviews
   has_one :address
