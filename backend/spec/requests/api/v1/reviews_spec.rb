@@ -10,7 +10,7 @@ RSpec.describe "API::V1::Reviews", type: :request do
   describe "GET /show" do
     context "when the review exists" do
       it "returns the review" do
-        get review_path(review)
+        get api_v1_review_path(review)
         expect(response).to have_http_status(:ok)
         expect(response.body).to include(review.text)
         expect(response.body).to include(review.rating.to_s)
@@ -19,7 +19,7 @@ RSpec.describe "API::V1::Reviews", type: :request do
 
     context "when the review does not exist" do
       it "returns a not found status" do
-        get review_path(id: -1)  # Using a non-existing ID
+        get api_v1_review_path(id: -1)  # Using a non-existing ID
         expect(response).to have_http_status(:not_found)
         expect(response.body).to include("Review not found")
       end
@@ -37,11 +37,13 @@ RSpec.describe "API::V1::Reviews", type: :request do
   end
 
   describe "POST /create" do
-    let(:review_attributes) { { text: "Great beer", rating: 5, beer_id: create(:beer).id } }
+    let(:user) { create(:user) }
+    let(:beer) { create(:beer) }
+    let(:review_attributes) { { text: "Great beer", rating: 5, beer_id: beer.id } }
   
     it "creates a new Review" do
       expect {
-        post reviews_path, params: { review: review_attributes }
+        post api_v1_reviews_path, params: { review: review_attributes, user_id: user.id }
       }.to change(Review, :count).by(1)
       expect(response).to have_http_status(:created)
     end
@@ -52,7 +54,7 @@ RSpec.describe "API::V1::Reviews", type: :request do
     let(:new_attributes) { { text: "Updated review text" } }
   
     it "updates the requested review" do
-      patch review_path(review), params: { review: new_attributes }
+      patch api_v1_review_path(review), params: { review: new_attributes }
       review.reload
       expect(review.text).to eq("Updated review text")
       expect(response).to have_http_status(:ok)
@@ -64,7 +66,7 @@ RSpec.describe "API::V1::Reviews", type: :request do
   
     it "destroys the requested review" do
       expect {
-        delete review_path(review)
+        delete api_v1_review_path(review)
       }.to change(Review, :count).by(-1)
       expect(response).to have_http_status(:no_content)
     end

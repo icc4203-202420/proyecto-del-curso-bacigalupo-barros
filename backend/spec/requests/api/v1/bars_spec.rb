@@ -29,7 +29,7 @@ RSpec.describe "API::V1::Bars", type: :request do
     it "renders a successful response" do
       get api_v1_bar_path(bar)
       expect(response).to be_successful
-      expect(response.body).to include(bar.name)
+      expect(json_response["bar"]["name"]).to eq(bar.name)
     end
   end  
 

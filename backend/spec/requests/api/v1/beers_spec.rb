@@ -11,7 +11,7 @@ RSpec.describe 'API::V1::Beers', type: :request do
   
     it 'returns all beers' do
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).size).to eq(10)
+      expect(JSON.parse(response.body)['beers'].size).to eq(10)
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe 'API::V1::Beers', type: :request do
   
     it 'returns a beer' do
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)['id']).to eq(beer.id)
+      expect(JSON.parse(response.body)['beer']['id']).to eq(beer.id)
     end
   end
     

@@ -6,7 +6,7 @@ class API::V1::BarsController < ApplicationController
 
   def index
     @bars = Bar.all
-    render json: @bars
+    render json: { bars: @bars }, status: :ok
   end
 
   def show
@@ -16,7 +16,7 @@ class API::V1::BarsController < ApplicationController
         thumbnail_url: url_for(@bar.thumbnail) }),
         status: :ok
     else
-      render json: @bar, status: :ok
+      render json: { bar: @bar.as_json }, status: :ok
     end
   end
 

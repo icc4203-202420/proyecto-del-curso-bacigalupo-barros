@@ -7,7 +7,7 @@ class API::V1::BeersController < ApplicationController
   # GET /beers
   def index
     @beers = Beer.all
-    render json: @beers
+    render json: { beers: @beers }, status: :ok
   end
 
   # def index
@@ -25,7 +25,7 @@ class API::V1::BeersController < ApplicationController
         thumbnail_url: url_for(@beer.thumbnail)}),
         status: :ok
     else
-      render json: @beer, status: :ok
+      render json: { beer: @beer.as_json }, status: :ok
     end 
   end
 

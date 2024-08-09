@@ -1,16 +1,16 @@
-class API::V1ReviewsController < ApplicationController
+class API::V1::ReviewsController < ApplicationController
   respond_to :json
-  before_action :set_user
+  before_action :set_user, only: [:index, :create]
   before_action :set_review, only: [:show, :update, :destroy]
 
   def index
     @reviews = Review.where(user: @user)
-    render json: @reviews
+    render json: { reviews: @reviews }, status: :ok
   end
 
   def show
     if @review
-      render json: @review, status: :ok
+      render json: { review: @review }, status: :ok
     else
       render json: { error: "Review not found" }, status: :not_found
     end
@@ -50,6 +50,6 @@ class API::V1ReviewsController < ApplicationController
   end
 
   def review_params
-    params.require(:review).permit(:text, :rating, :beer_id)
+    params.require(:review).permit(:id, :text, :rating, :beer_id)
   end
 end
