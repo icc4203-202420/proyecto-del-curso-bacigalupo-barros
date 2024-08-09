@@ -28,5 +28,7 @@ COPY backend .
 # Expose port 3001 to be accessible from the host
 EXPOSE 3001
 
-# Configure the main command to run when running the image
+COPY /backend/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3001"]

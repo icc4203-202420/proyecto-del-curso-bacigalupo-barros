@@ -19,5 +19,9 @@ RUN RAILS_ENV=production rails assets:precompile
 
 EXPOSE 3001
 
-# Start the application
+COPY ./docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3001"]
+
+
