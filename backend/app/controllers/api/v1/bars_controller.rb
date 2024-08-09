@@ -1,8 +1,10 @@
 class API::V1::BarsController < ApplicationController
   include ImageProcessing
+  include Authenticable
 
   respond_to :json
   before_action :set_bar, only: [:show, :update, :destroy]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   def index
     @bars = Bar.all
@@ -60,8 +62,9 @@ class API::V1::BarsController < ApplicationController
 
   def bar_params
     params.require(:bar).permit(
-      :name, :address_id, :latitude, 
-      :longitude, :image_base64)
+      :name, :latitude, :longitude, :image_base64,
+      address_attributes: [:user_id, :line1, :line2, :city, country_attributes: [:name]]
+    )
   end
 
   def handle_image_attachment

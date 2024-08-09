@@ -1,8 +1,10 @@
 class API::V1::BeersController < ApplicationController
   include ImageProcessing
+  include Authenticable
 
   respond_to :json
   before_action :set_beer, only: [:show, :update, :destroy]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /beers
   def index
@@ -77,5 +79,10 @@ class API::V1::BeersController < ApplicationController
     @beer.image.attach(io: decoded_image[:io], 
       filename: decoded_image[:filename], 
       content_type: decoded_image[:content_type])
-  end   
+  end 
+  
+  def verify_jwt_token
+    authenticate_user!
+    head :unauthorized unless current_user
+  end  
 end

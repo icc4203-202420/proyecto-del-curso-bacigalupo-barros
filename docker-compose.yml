@@ -3,19 +3,19 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: ./backend/Dockerfile.dev # Usar Dockerfile de desarrollo
       args:
-        RUBY_VERSION: 3.3.0
+        RUBY_VERSION: 3.3.4
     volumes:
-      - ./backend:/app
+      - ./backend:/app # Mapeo directo para desarrollo en caliente
       - bundle_data:/usr/local/bundle
     ports:
-      - "3001:3001"
+      - "3001:3001" # Asegurar el mapeo correcto del puerto
     environment:
       RAILS_ENV: development
       BUNDLE_PATH: /usr/local/bundle
       REDIS_URL: redis://redis:6379/0
-    command: ./bin/rails server -b 0.0.0.0
+    command: ./bin/rails server -b 0.0.0.0 -p 3001
     depends_on:
       - redis
   redis:

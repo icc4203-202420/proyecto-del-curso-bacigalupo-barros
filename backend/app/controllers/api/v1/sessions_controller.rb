@@ -12,7 +12,12 @@ class API::V1::SessionsController < Devise::SessionsController
   end
   def respond_to_on_destroy
     if request.headers['Authorization'].present?
-      jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.devise_jwt_secret_key!).first
+      jwt_payload = JWT.decode(
+        request.headers['Authorization'].split(' ').last,
+        Rails.application.credentials.devise_jwt_secret_key,
+        true,
+        { algorithm: 'HS256' }
+      ).first
       current_user = User.find(jwt_payload['sub'])
     end
     

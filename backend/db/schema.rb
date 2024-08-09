@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_09_141019) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_09_155040) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -72,6 +72,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_141019) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["address_id"], name: "index_bars_on_address_id"
+  end
+
+  create_table "bars_beers", force: :cascade do |t|
+    t.integer "bar_id", null: false
+    t.integer "beer_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bar_id", "beer_id"], name: "index_bars_beers_on_bar_id_and_beer_id", unique: true
+    t.index ["bar_id"], name: "index_bars_beers_on_bar_id"
+    t.index ["beer_id"], name: "index_bars_beers_on_beer_id"
   end
 
   create_table "beers", force: :cascade do |t|
@@ -197,6 +207,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_141019) do
   add_foreign_key "attendances", "events"
   add_foreign_key "attendances", "users"
   add_foreign_key "bars", "addresses"
+  add_foreign_key "bars_beers", "bars"
+  add_foreign_key "bars_beers", "beers"
   add_foreign_key "beers", "brands"
   add_foreign_key "brands", "breweries"
   add_foreign_key "event_pictures", "events"

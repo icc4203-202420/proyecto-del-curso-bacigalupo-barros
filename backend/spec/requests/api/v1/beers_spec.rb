@@ -3,6 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe 'API::V1::Beers', type: :request do
+  let(:user) { create(:user) }
+
+  before(:each) do
+    @token = user.generate_jwt
+  end
+
+  after(:each) do
+    user.update(jti: SecureRandom.uuid)
+  end
+  
   describe 'GET /api/v1/beers' do
     before do
       create_list(:beer, 10)
@@ -44,7 +54,9 @@ RSpec.describe 'API::V1::Beers', type: :request do
     }
   
     context 'when the request is valid' do
-      before { post api_v1_beers_path, params: { beer: valid_attributes } }
+      before { post api_v1_beers_path, 
+        params: { beer: valid_attributes },
+        headers: { 'Authorization' => "Bearer #{@token}" } }
   
       it 'creates a beer' do
         expect(response).to have_http_status(:created)
@@ -53,7 +65,8 @@ RSpec.describe 'API::V1::Beers', type: :request do
     end
   
     context 'when the request is invalid' do
-      before { post api_v1_beers_path, params: { beer: { name: '' } } } # Missing required fields
+      before { post api_v1_beers_path, params: { beer: { name: '' } },
+        headers: { 'Authorization' => "Bearer #{@token}" } } # Missing required fields
   
       it 'returns status code 422' do
         expect(response).to have_http_status(:unprocessable_entity)
@@ -83,7 +96,9 @@ RSpec.describe 'API::V1::Beers', type: :request do
     }
   
     context 'when the request is valid and includes an image' do
-      before { post api_v1_beers_path, params: { beer: valid_attributes } }
+      before { post api_v1_beers_path, 
+        params: { beer: valid_attributes },
+        headers: { 'Authorization' => "Bearer #{@token}" } }
   
       it 'creates a beer with an image' do
         expect(response).to have_http_status(:created)
@@ -97,7 +112,9 @@ RSpec.describe 'API::V1::Beers', type: :request do
     let(:valid_attributes) { { name: 'Updated Beer' } }
   
     context 'when the record exists' do
-      before { put api_v1_beer_path(beer), params: { beer: valid_attributes } }
+      before { put api_v1_beer_path(beer), 
+        headers: { 'Authorization' => "Bearer #{@token}" },
+        params: { beer: valid_attributes } }
   
       it 'updates the record' do
         expect(response).to have_http_status(:ok)
@@ -109,7 +126,8 @@ RSpec.describe 'API::V1::Beers', type: :request do
   describe 'DELETE /api/v1/beers/:id' do
     let(:beer) { create(:beer) }
   
-    before { delete api_v1_beer_path(beer) }
+    before { delete api_v1_beer_path(beer),
+      headers: { 'Authorization' => "Bearer #{@token}" } }
   
     it 'deletes the beer and returns status code 204' do
       expect(response).to have_http_status(:no_content)
