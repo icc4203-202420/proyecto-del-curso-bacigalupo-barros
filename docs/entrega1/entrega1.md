@@ -36,13 +36,17 @@ En la API del backend, se pide agregar los siguientes controladores en esta entr
 * [1 punto] `EventsController`: Se deben implementar los endpoints de `GET /api/v1/events/:id` (muestra evento), `POST /api/v1/events` (crea evento), `PATCH /api/v1/events` (actualiza evento), `DELETE /api/v1/events/:id` (elimina evento). Notar que los eventos permiten usar una imagen de flyer. Deben el procesamiento de la imagen, en forma similar a cómo opera `BeerController` y `BarsController`. Añadir también requisitos de autenticación para operaciones de creación, actualización y eliminación de eventos.
 * [1 punto] `UsersController`: Se deben implementar los endpoints de `GET /api/v1/users/:id/friendships` (permite obtener información de todas las amistades del usuario con `user_id`), es decir, retorna una lista con todos los `user` que son amigos según el modelo `Frienship`. Además, se debe implementar `POST /api/v1/users/:id/friendships`, para agregar una nueva amistad (ver modelo `Friendship` y tabla en `db/schema.rb`). Añadir requisito de autenticación para todas estas operaciones.
 
-Estos requisitos son evaluados en escala 1-5. Estos puntos se traducen a ponderadores:
+## Evaluación
+
+Cada requisito será evaluado en escala 1-5. Estos puntos se traducen a ponderadores:
 
 * 1 -> 0.0: No entregado
 * 2 -> 0.25: Esbozo de solucion
 * 3 -> 0.5: Logro intermedio
 * 4 -> 0.75: Alto logro con deficiencias o errores menores
 * 5 -> 0.75: Implementación completa y correcta
+
+Los ponderadores aplican al puntaje máximo del ítem. La nota en escala 1-7 se calcula como la suma de puntajes parciales ponderados más el punto base.
 
 ## Forma y fecha de entrega
 
