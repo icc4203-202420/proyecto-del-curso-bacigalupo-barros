@@ -6,7 +6,7 @@ El nombre de la aplicación lo definirá cada grupo, atendiendo la moral y las b
 
 ## Entrega 1
 
-Los requisitos de la primera entrega del proyecto están en el directorio `doc/entrega1/entrega1.md`. Para las entregas siguientes, los enunciados se agregarán bajo el directorio `doc`. 
+Los requisitos de la primera entrega del proyecto están en el directorio `docs/entrega1/entrega1.md`. Para las entregas siguientes, los enunciados se agregarán bajo el directorio `docs`. 
 
 Para actualizar el código base del proyecto de acuerdo a los anuncios de los profesores (p.ej., para obtener el enunciado de la segunda entrega y siguientes), deben configurar un origen remoto "upstream" en su repositorio. Vean la sección "Uso del repositorio" más abajo en este mismo documento.
 
