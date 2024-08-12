@@ -79,7 +79,7 @@ La aplicación Rails de backend ha sido generada en modo API, es decir, no tiene
 
 ActiveStorage viene pre-configurado en la aplicación de backend y algunos de los modelos como `Bar`, `Beer` e `Event` permiten adjuntar fotografías.
 
-Devise y Devise-JWT también vienen pre-configurados y es posible usar la API del backend autenticando con tokens del tipio JavaScript Web Tokens (JWT).
+Devise y Devise-JWT también vienen pre-configurados y es posible usar la API del backend autenticando con tokens del tipo JavaScript Web Tokens (JWT).
 
 La aplicación además tiene tests escritos con RSpec para la mayor parte de los modelos, y algunos controladores.
 
@@ -114,7 +114,9 @@ En las entregas sucesivas del proyecto se les irá solicitando completar funcion
 
 ## Posibilidad de realizar pruebas de carga y stress contra el Backend
 
-Es posible utilizar la herramienta JMeter para realizar pruebas de rendimiento al backend.
+Es posible utilizar la herramienta JMeter para realizar pruebas de rendimiento al backend. Para esto, existe un archivo de configuración para JMeter en `backend/test/jmeter/test_plan_beers.jmx`. El plan de pruebas tiene un grupo de threads preconfigurado para enviar requests a la aplicación.
+
+Con la base de datos debidamente poblada, es posible realizar pruebas de carga al backend utilizando esta herramienta, y revisar el reporte resumen ("summary report").
 
 ## Iniciar la Aplicación
 
@@ -159,13 +161,15 @@ Guardar el archivo y salir. Repetir cambiando la opción `--environment test` po
 
 Luego, es posible ejecutar los tests:
 
-```
+```sh
 $ bundle exec rspec # verificar que los tests pasen
 ```
 
 **Iniciar la aplicación de backend Rails**
 
+```sh
 $ rails s # iniciar la aplicación
+```
 
 Las siguientes ejecuciones de la aplicación sólo requieren levantar el sevidor Puma con el comando `rails s`.
 
@@ -238,6 +242,29 @@ Es recomendable usar Postman para realizar pruebas de la API antes de implementa
 * Luego, es posible llamar a cualquier operación de la API usando el token JWT. Por ejemplo, ir a `POST http://localhost:3001/api/v1/bars`, y con esa solicitud crear un nuevo bar. Es necesario agregar un header (ir a pestaña Headers), con key "Authorization", y con el token JWT en valor (value). Se tiene que leer en value "Bearer [token JWT]".
 * Es responsabilidad del cliente eliminar el token JWT cuando se deja de usar. Los tokens tienen vigencia de 24 hrs. una vez creados. Esto se ajusta en `backend/config/initializers/devise.rb` en `jwt.expiration_time`.
 
+## Uso del repositorio
+
+Cada grupo de proyecto obtiene su repositorio a través de una invitación de GitHub Classroom. Los grupos podrán crear libremente ramas locales y remotas para avanzar en el desarrollo de su aplicación. Sin embargo,
+
+* Se considerará que la rama main contiene el último código estable que será revisado y evaluado por el ayudante.
+* Pueden usar issues de GitHub en su repositorio para mantener registro de bugs, o features que requieran implementar.
+* Para las entregas, antes de la fecha límite, deben crear un _pull request_ e incluir al ayudante de proyecto que tengan asignado. El _pull request_ puede ser creado sin requerir una mezcla de código. Más bien, su fin es que el ayudante pueda revisar el código y dejar su evaluación de cada aspecto en la entrega. El título del pull request debe decir "Revisión Entrega X", en donde X es el número de la entrega. La primera parte del proyecto (frontend web) tendrá números 1.1 a 1.5, y la segunda parte números 2.1 a 2.3.
+
+Los profesores del grupo continuarán trabajando sobre el repositorio con el código base durante el semestre, para tanto para remediar posibles bugs como para proveer nuevas funciones relevantes para alguna de las entregas. Esto incluirá el código base para la segunda parte del proyecto en donde la aplicación de frontend será del tipo híbrido.
+
+Para que los grupos puedan actualizar su repositorio con nuevos lanzamientos de código base, deben ejecutar los siguientes comandos su su repositorio local:
+
+```sh
+$ git remote add upstream https://github.com/icc4203-202420/project-base
+```
+
+Este comando permite agregar el repositorio de código base mantenido por los profesores del curso como otro origen remoto, de nombre "upstream". Luego, para aplicar los cambios que se encuentren en dicho repositorio en el repositorio local, se deben ejecutar los siguientes comandos:
+
+```sh
+$ git fetch upstream
+$ git merge upstream/main
+```
+
 ## Herramientas Requeridas para el desarrollo
 
 Para desarrollar este proyecto, se requiere un entorno de programación que cuente con:
@@ -255,4 +282,3 @@ La aplicación rails en el directorio `backend` cuenta con archivos `.ruby-versi
 * Docker no es estrictamente requerido, pero puede facilitar la instalación del ambiente de desarrollo, dado que el proyecto incluye archivo `docker-compose` y archivos `Dockerfile`. Así no se requeriría instalar todas las herramientas nombradas arriba, a excepción de VSCode.
 
 Pueden usar la máquina virtual basada en Debian 12 que se encuentra disponible para descarga en el sitio del curso en Canvas, o bien, ustedes mismos instalar el software nombrado arriba.
-

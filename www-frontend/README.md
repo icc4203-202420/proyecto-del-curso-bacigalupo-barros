@@ -1,8 +1,17 @@
-# React + Vite
+# Aplicación de Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción
 
-Currently, two official plugins are available:
+Esta aplicación de frontend se encuentra implementada con React utilizando Vite como andamiaje para despliegue en desarrollo y para empaquetamiento de producción.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Incluye lo más básico y elemental y será completada en las entregas sucesivas de proyecto.
+
+## Ejecución
+
+Para ejecutar esta aplicación en modo de desarrollo, el comando básico es:
+
+```sh
+yarn dev
+```
+
+Es posible detener la aplicación con Ctrl+C.
