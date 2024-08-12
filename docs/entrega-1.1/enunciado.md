@@ -1,4 +1,4 @@
-# Entrega 1 - Diseño de interfaz web móvil y desarrollo inicial
+# Entrega 1.1 - Diseño de interfaz web móvil y desarrollo inicial
 
 ## Objetivos
 
@@ -6,7 +6,7 @@ El objetivo de esta entrega es documentar el diseño de la interfaz de usuario d
 
 ## Diseño de Interfaz de Usuario
 
-Para los requisitos funcionales 1 a 6 del enunciado general del proyecto (verlos también aquí a continuación), se debe presentar un diseño de interfaz móvil de mediana fidelidad, es decir, mostrar todas las pantallas asemejándose a la interfaz real, pero sin implementar funcionalidad real, sino _sólo navegación básica mediante enlaces entre las distintas pantallas_.
+Para los requisitos funcionales 1 a 6 del [enunciado general del proyecto](../../README.md) (verlos también aquí a continuación), se debe presentar un diseño de interfaz móvil de mediana fidelidad, es decir, mostrar todas las pantallas asemejándose a la interfaz real, pero sin implementar funcionalidad real, sino _sólo navegación básica mediante enlaces entre las distintas pantallas_.
 
 El diseño de interfaz debe realizarse considerando que el toolkit de interfaz de usuario móvil preferido será Material UI de Google, versión 2, y la implementación a usar será la biblioteca MUI de componentes para React ([https://mui.com/material-ui/](https://mui.com/material-ui/)), versión 5, la cual se basa en Material UI versión 2. Es posible utilizar un módulo no oficial de Grayhat Studio compatible con MUI ([https://material-web-components-react.grayhat.studio/](https://material-web-components-react.grayhat.studio/)), el cual provee componentes similares a Material UI versión 3. Estará permitido utilizar esto en su implementación, pero bajo su propio riesgo.
 
@@ -53,3 +53,5 @@ Los ponderadores aplican al puntaje máximo del ítem. La nota en escala 1-7 se 
 Con respecto al diseño de interfaz de usuario, se debe proveer el archivo fuente de Figma o de Axure RP para su evaluación. Además, es conveniente exportar el diseño completo a PDF con estas herramientas. Los archivos de diseño deben ser entregados en la misma carpeta en donde está este archivo, con nombre 'grupoxx.abc', en donde xx es el número del grupo asignado por lista (publicada en Canvas), y .abc es la extensión que corresponda a la herramienta usada (Figma o Axure). 
 
 El código con la implementación de los controladores debe ser entregado en este repositorio. Para la evaluación, se debe realizar un pull request que incluya al ayudante de proyecto asignado.
+
+La fecha límite para la entrega 1.1 es viernes 23/8 a las 23:59 hrs.

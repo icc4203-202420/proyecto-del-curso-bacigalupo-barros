@@ -6,7 +6,7 @@ El nombre de la aplicación lo definirá cada grupo, atendiendo la moral y las b
 
 ## Entrega 1
 
-Los requisitos de la primera entrega del proyecto están en el directorio `docs/entrega1/entrega1.md` ([pinchar aquí](docs/entrega1/entrega1.md)). Para las entregas siguientes, los enunciados se agregarán bajo el directorio `docs`. 
+Los requisitos de la primera entrega del proyecto están en el directorio `docs/entrega1/entrega1.md` ([pinchar aquí](docs/entrega-1.1/enunciado.md)). Para las entregas siguientes, los enunciados se agregarán bajo el directorio `docs`. 
 
 Para actualizar el código base del proyecto de acuerdo a los anuncios de los profesores (p.ej., para obtener el enunciado de la segunda entrega y siguientes), deben configurar un origen remoto "upstream" en su repositorio. Vean la sección "Uso del repositorio" más abajo en este mismo documento.
 
@@ -107,7 +107,7 @@ Los requisitos funcionales de la aplicación que deberán desarrollar son los si
 2. Los usuarios pueden buscar bares en la aplicación por nombre.
 3. Los usuarios pueden buscar bares por ubicación (país, ciudad, calle y número), usando un mapa.
 4. Los usuarios pueden ver la lista de eventos (ver modelo `Event` en `schema.rb`) que se celebran en un Bar (modelo `Bar` y tabla en `schema.rb`).
-5. Los usuario pueden buscar una cerveza en la aplicación (`Beer`), ver qué cervecería la produce (`Brewery`), y qué bares la sirven.
+5. Los usuario pueden buscar una cerveza en la aplicación (`Beer`), y ver los detalles de la cerveza, incluyendo qué cervecería la produce (`Brewery`), y qué bares la sirven.
 6. Los usuarios pueden escribir evaluaciones (ver modelo `Review` y tabla en `schema.rb`) de las cervezas, con rating y texto.
 7. Los usuarios pueden ver la evaluación global de una cerveza (rating promedio), junto con a su propia evaluación de la cerveza (si existe) y las evaluaciones de otros usuarios. 
 7. Los usuarios pueden asistir (hacer "_check-in_") en un evento (ver modelo `Attendance` y tabla en `schema.rb`), y ver todos los usuarios que también han hecho _check-in_.
