@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Esta aplicación de backend se encuentra implementada con Ruby on Rails, y provee los modelos según el modelo de dominio descrito en el archivo `README.md` en la raíz del repositorio en donde se encuentra alojado este código.
+Esta aplicación de backend se encuentra implementada con Ruby on Rails, y provee los modelos según el modelo de dominio descrito en el archivo [README.md](../README.md) en la raíz del repositorio en donde se encuentra alojado este código.
 
 Las APIs que provee el código base de esta aplicación están limitadas a los siguientes modelos:
 
