@@ -12,7 +12,7 @@
 # Ignore other unneeded files.
 # database.yml
 secrets.yml
-/config/credentials.yml.enc
+/config/credentials/*.yml.enc
 .DS_Store
 
 # Ignore node_modules
@@ -52,3 +52,11 @@ secrets.yml
 
 # Ignore .byebug_history
 .byebug_history
+
+/config/credentials/development.key
+
+/config/credentials/test.key
+
+/config/credentials/production.key
+
+/config/credentials/developmentls.key

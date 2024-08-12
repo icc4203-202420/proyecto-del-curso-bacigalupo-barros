@@ -1,6 +1,6 @@
-# Proyecto de Aplicaciones Móviles
+# Proyecto de Aplicaciones Móviles - Enunciado General del Proyecto
 
-El proyecto del curso en este semestre consistirá en desarrollar una aplicación móvil para personas aficionadas a las cervezas, que frecuentan bares y eventos que se realizan en ellos.
+El proyecto del curso en este semestre consistirá en desarrollar una aplicación móvil para personas aficionadas a las cervezas, que frecuentan bares y eventos que se realizan en ellos. Los usuarios pueden evaluar cervezas y hacer amistades entre ellos. También pueden publicar fotos de los eventos a los que asisten en los bares, y etiquetarse.
 
 El nombre de la aplicación lo definirá cada grupo, atendiendo la moral y las buenas costumbres, por supuesto.
 
@@ -73,7 +73,9 @@ Relaciones:
 
 ## Arquitectura del Proyecto Base
 
-El proyecto base está conformado por una aplicación de backend, desarrollada en Rails 7.1 en modo API. La aplicación de backend contiene prácticamente todos los modelos necesarios, con validaciones relevantes y asociaciones. Las tablas tienen índices.
+El proyecto base está conformado por una aplicación de backend (en directorio `backend`), desarrollada en Rails 7, y otra aplicación de frontend escrita en React, generada con la herramienta Vite (en directorio `www-frontend`). 
+
+La aplicación Rails de backend ha sido generada en modo API, es decir, no tiene componentes de ActionView para renderizado de HTML, ni soporte para cookies. Esta aplicación contiene prácticamente todos los modelos necesarios, con validaciones relevantes y asociaciones. Las tablas tienen índices.
 
 ActiveStorage viene pre-configurado en la aplicación de backend y algunos de los modelos como `Bar`, `Beer` e `Event` permiten adjuntar fotografías.
 
@@ -91,17 +93,97 @@ El esquema arquitectónico a ojos del desarrollador que trabaja en su máquina l
 
 ![Vista de arquitectura para despliegue local de desarrollo](docs/images/arquitectura-desarrollador.png)
 
+## Requisitos Funcionales
+
+Los requisitos funcionales de la aplicación que deberán desarrollar son los siguientes:
+
+1. Los usuarios (ver modelo `User` y tabla en `db/schema.rb`) pueden registrarse ingresando nombre, apellido, email, un _handle_ (similar a X o Instagram, p.ej.,@kingofbeers), y datos de dirección opcionales (ver modelo `Address` y tabla en `db/schema.rb`).
+2. Los usuarios pueden buscar bares en la aplicación por nombre.
+3. Los usuarios pueden buscar bares por ubicación (país, ciudad, calle y número), usando un mapa.
+4. Los usuarios pueden ver la lista de eventos (ver modelo `Event` en `schema.rb`) que se celebran en un Bar (modelo `Bar` y tabla en `schema.rb`).
+5. Los usuario pueden buscar una cerveza en la aplicación (`Beer`), ver qué cervecería la produce (`Brewery`), y qué bares la sirven.
+6. Los usuarios pueden escribir evaluaciones (ver modelo `Review` y tabla en `schema.rb`) de las cervezas, con rating y texto.
+7. Los usuarios pueden ver la evaluación global de una cerveza (rating promedio), junto con a su propia evaluación de la cerveza (si existe) y las evaluaciones de otros usuarios. 
+7. Los usuarios pueden asistir (hacer "_check-in_") en un evento (ver modelo `Attendance` y tabla en `schema.rb`), y ver todos los usuarios que también han hecho _check-in_.
+8. Los usuarios pueden subir fotografías a los eventos (ver modelo `EventPicture`). 
+9. Los usuarios pueden ver las fotos de un evento como una galería, con scrolling.
+10. Los usuarios pueden buscarse mutuamente en la aplicación usando _handle_, y agregarse como amigos (ver modelo `Friendship` y tabla en `schema.rb`), indicando el evento en donde se encontraron por primera vez opcionalmente.
+11. Los usuarios pueden etiquetarse en las fotos de un evento.
+
+En las entregas sucesivas del proyecto se les irá solicitando completar funcionalidad relativa a los requisitos anteriores, y se les dará más detalle sobre las funciones específicas a implementar.
+
 ## Posibilidad de realizar pruebas de carga y stress contra el Backend
 
 Es posible utilizar la herramienta JMeter para realizar pruebas de rendimiento al backend.
 
 ## Iniciar la Aplicación
 
-**Desde el sistema host**
+Si se opta por trabajar en el sistema operativo host en ambiente de desarrollo, instalando RVM y Node (ver sección de Herramientas Requeridas más adelante), entonces se debe iniciar la aplicación Rails con el backend, y el servidor web de Vite que sirve la aplicación React.
 
-**Con Docker**
+Antes de ejecutar la aplicación Rails por primera vez, es necesario crear una clave para los tokens de autenticación que son generados por el backend.
 
-En el directorio raíz de la aplicación hay un archivo de configuración `docker-compose.yml` preonfigurado para hacer funcionar las aplicaciones de `frontend` y `backend` en ambiente de desarrollo. Es importante hacer algunas configuraciones previas en el aplicación Rails (ver el archivo `backend/README.md`) antes de iniciar por primera vez.
+**Preparar clave para tokens de autenticación JWT generados por el backend Rails**
+
+Para iniciar la aplicación Rails por primera vez, ir al directorio `backend` en la consola y ejecutar los siguientes pasos:
+
+```sh
+$ bundle install # verificar que las gemas queden instaladas correctamente
+```
+Luego, se debe crear un archivo de configuración encriptado para Rails, incluyendo la clave para los tokens JWT utilizados por devise-jwt. Para esto, asegurarse primero de eliminar archivos `config/credentials/*.yml.enc` si es que el repositorio los contiene.
+
+```sh
+$ rm config/*.yml.enc
+```
+
+Luego, se necesita crear una clave para que devise-jwt y Warden generen tokens JWT válidos:
+
+```sh
+$ rails runner "require 'securerandom'; puts SecureRandom.hex(64)"
+```
+
+Copiar la clave generada en la consola.
+
+```sh
+$ EDITOR="nano" rails credentials:edit --environment test
+```
+
+Al final del archivo agregar una línea con el siguiente contenido:
+
+```
+devise_jwt_secret_key: [clave generada por comando anterior sin estos corchetes]
+```
+
+Guardar el archivo y salir. Repetir cambiando la opción `--environment test` por `--environment development`. Si se va a realizar una instalación de producción, se debe también realizar este paso con el ambiente `production`.
+
+**Ejecutar tests del backend Rails**
+
+Luego, es posible ejecutar los tests:
+
+```
+$ bundle exec rspec # verificar que los tests pasen
+```
+
+**Iniciar la aplicación de backend Rails**
+
+$ rails s # iniciar la aplicación
+
+Las siguientes ejecuciones de la aplicación sólo requieren levantar el sevidor Puma con el comando `rails s`.
+
+**Iniciar la aplicación de frontend con Vite**
+
+Luego, para iniciar la aplicación React con Vite, se debe ir al directorio `www-frontend` en el repositorio y allí ejecutar:
+
+```sh
+$ npm install -g yarn
+$ yarn install
+$ yarn dev
+```
+
+Se puede detener la aplicación con Ctrl+C. Basta `yarn dev` para volver a ejecutar.
+
+**Inicio de la aplicación con Docker**
+
+En el directorio raíz de la aplicación hay un archivo de configuración `docker-compose.yml` preonfigurado para hacer funcionar las aplicaciones de `frontend` y `backend` en ambiente de desarrollo. Los sistemas de archivo de los contenedores quedan mapeados al sistema de archivos del host para acceder al código. Por esto, es importante realizar los pasos de generación de clave para token JWT en la aplicación Rails como se explica arriba antes de ejecutar con Docker.
 
 Con Docker Compose, se instalarán automáticamente todas las imágenes necesarias. Ejecutar el siguiente comando:
 
@@ -145,7 +227,14 @@ Finalmente, hay situaciones en las que quedan contenedores huérfanos, por ejemp
 $ docker-compose down --remove-orphans
 ```
 
-## Herramientas requeridas
+## Probar la API desde un cliente web
+
+Es recomendable usar Postman para realizar pruebas de la API antes de implementar funcionalidad en el frontend. Para esto, considerar:
+
+
+
+
+## Herramientas Requeridas para el desarrollo
 
 Para desarrollar este proyecto, se requiere un entorno de programación que cuente con:
 
@@ -157,7 +246,7 @@ $ rvm install 3.3.4 -C --with-openssl-dir=$(brew --prefix openssl@1.1)
 La aplicación rails en el directorio `backend` cuenta con archivos `.ruby-version` y `.ruby-gemset` que permiten cambiar automáticamente a la versión y gemset correcta.
 * Node 18 o 20, instalable en [Mac con homebrew](https://formulae.brew.sh/formula/node@20), o en Linux ([Ubuntu](https://medium.com/@nsidana123/before-the-birth-of-of-node-js-15ee9262110c)), como sistema operativo host, en una máquina virtual, con Windows Subsystem for Linux (WSL), o con Docker.
 * VSCode idealmente para editar el código
-* Docker no es estrictamente requerido, pero puede facilitar la instalación, dado que el proyecto incluye archivo `docker-compose` y archivos `Dockerfile`.
+* Docker no es estrictamente requerido, pero puede facilitar la instalación del ambiente de desarrollo, dado que el proyecto incluye archivo `docker-compose` y archivos `Dockerfile`. Así no se requeriría instalar todas las herramientas nombradas arriba, a excepción de VSCode.
 
 Pueden usar la máquina virtual basada en Debian 12 que se encuentra disponible para descarga en el sitio del curso en Canvas, o bien, ustedes mismos instalar el software nombrado arriba.
 
