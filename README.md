@@ -73,7 +73,7 @@ Relaciones:
 
 ## Arquitectura del Proyecto Base
 
-El proyecto base está conformado por una aplicación de backend (en directorio `backend`), desarrollada en Rails 7, y otra aplicación de frontend escrita en React, generada con la herramienta Vite (en directorio `www-frontend`). 
+El proyecto base está conformado por una aplicación de backend (en directorio `backend`), desarrollada en Rails 7, y otra aplicación de frontend escrita en React, generada con la herramienta Vite (en directorio `www-frontend`). Además, en el futuro se agregará otra aplicación móvil híbrida en `hybrid-frontend`.
 
 La aplicación Rails de backend ha sido generada en modo API, es decir, no tiene componentes de ActionView para renderizado de HTML, ni soporte para cookies. Esta aplicación contiene prácticamente todos los modelos necesarios, con validaciones relevantes y asociaciones. Las tablas tienen índices.
 
@@ -229,10 +229,14 @@ $ docker-compose down --remove-orphans
 
 ## Probar la API desde un cliente web
 
-Es recomendable usar Postman para realizar pruebas de la API antes de implementar funcionalidad en el frontend. Para esto, considerar:
+Es recomendable usar Postman para realizar pruebas de la API antes de implementar funcionalidad en el frontend. Para esto, considerar que:
 
-
-
+* Hay una pequeña colección públicamente compartida de llamadas a la API, para Postman, que ha creado el profesor del curso, disponible en [https://bit.ly/icc4203-202420-project-postman-collection](https://bit.ly/icc4203-202420-project-postman-collection).
+* Antes de llamar a las operaciones de la API, es necesario autenticarse con el sistema backend. Para esto se debe ejecutar la petición `POST http://localhost:3001/api/v1/signup` para crear una cuenta. Ver los detalles del usuario a crear en la pestaña "Body".
+* Luego es necesario obtener un token JWT llamando a `POST http://localhost:3001/api/v1/login`, con el usuario y la clave utilizada en la petición anterior.
+* Ver el token JWT en la respuesta de la llamada anterior. Copiarlo.
+* Luego, es posible llamar a cualquier operación de la API usando el token JWT. Por ejemplo, ir a `POST http://localhost:3001/api/v1/bars`, y con esa solicitud crear un nuevo bar. Es necesario agregar un header (ir a pestaña Headers), con key "Authorization", y con el token JWT en valor (value). Se tiene que leer en value "Bearer [token JWT]".
+* Es responsabilidad del cliente eliminar el token JWT cuando se deja de usar. Los tokens tienen vigencia de 24 hrs. una vez creados. Esto se ajusta en `backend/config/initializers/devise.rb` en `jwt.expiration_time`.
 
 ## Herramientas Requeridas para el desarrollo
 
@@ -246,6 +250,8 @@ $ rvm install 3.3.4 -C --with-openssl-dir=$(brew --prefix openssl@1.1)
 La aplicación rails en el directorio `backend` cuenta con archivos `.ruby-version` y `.ruby-gemset` que permiten cambiar automáticamente a la versión y gemset correcta.
 * Node 18 o 20, instalable en [Mac con homebrew](https://formulae.brew.sh/formula/node@20), o en Linux ([Ubuntu](https://medium.com/@nsidana123/before-the-birth-of-of-node-js-15ee9262110c)), como sistema operativo host, en una máquina virtual, con Windows Subsystem for Linux (WSL), o con Docker.
 * VSCode idealmente para editar el código
+* Postman para realizar pruebas contra la API.
+* Figma o Axure RP para prototipado de la interfaz de usuario (más indicaciones sobre esto en el enunciado 1.1 del proyecto).
 * Docker no es estrictamente requerido, pero puede facilitar la instalación del ambiente de desarrollo, dado que el proyecto incluye archivo `docker-compose` y archivos `Dockerfile`. Así no se requeriría instalar todas las herramientas nombradas arriba, a excepción de VSCode.
 
 Pueden usar la máquina virtual basada en Debian 12 que se encuentra disponible para descarga en el sitio del curso en Canvas, o bien, ustedes mismos instalar el software nombrado arriba.
