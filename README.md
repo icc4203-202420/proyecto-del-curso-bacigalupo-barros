@@ -4,9 +4,15 @@ El proyecto del curso en este semestre consistirá en desarrollar una aplicació
 
 El nombre de la aplicación lo definirá cada grupo, atendiendo la moral y las buenas costumbres, por supuesto.
 
+## Entrega 1
+
+Los requisitos de la primera entrega del proyecto están en el directorio `doc/entrega1/entrega1.md`. Para las entregas siguientes, los enunciados se agregarán bajo el directorio `doc`. 
+
+Para actualizar el código base del proyecto de acuerdo a los anuncios de los profesores (p.ej., para obtener el enunciado de la segunda entrega y siguientes), deben configurar un origen remoto "upstream" en su repositorio. Vean la sección "Uso del repositorio" más abajo en este mismo documento.
+
 ## Modelo de Dominio
 
-Según el problema antes descrito, el modelo de dominio de la aplicación tiene varias entidades y relaciones relevantes:
+El modelo de dominio de la aplicación que vamos a desarrollar tiene varias entidades y relaciones relevantes:
 
 1. **Usuario** (`User`): Un usuario registrado en la aplicación
 2. **Amistad** (`Friendship`): Una relación de amistad entre un `User` y otro.
