@@ -1,13 +1,15 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
-  before_action :set_user, only: [:show, :update]  
+  include Authenticable
+  before_action :verify_jwt_token, only: [:create, :update]
+  before_action :set_user, only: [:show, :update, :friendships, :create_friendship]  
   
   def index
     @users = User.includes(:reviews, :address).all   
   end
 
   def show
-  
+    render json: @user, include: [:address, :reviews, :friendships]
   end
 
   def create
@@ -28,6 +30,22 @@ class API::V1::UsersController < ApplicationController
     end
   end
 
+  #CAMBIOS PARA FRIENDSHIP
+  #GET friendships
+  def friendships
+    render json: @user.friendships.includes(:friend).map(&:friend)
+  end
+
+  #POST friendships
+  def create_friendship
+    @friendship = @user.friendships.new(friendship_params)
+    if @friendship.save
+      render json: @friendship, status: :created
+    else
+      render json: @friendship.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_user
@@ -42,4 +60,9 @@ class API::V1::UsersController < ApplicationController
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]
             })
   end
+
+  def friendship_params
+    params.require(:friendship).permit(:friend_id)
+  end
+
 end
