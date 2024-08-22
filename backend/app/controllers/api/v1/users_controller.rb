@@ -62,7 +62,7 @@ class API::V1::UsersController < ApplicationController
   end
 
   def friendship_params
-    params.require(:friendship).permit(:friend_id)
+    params.require(:friendship).permit(:friend_id, :bar_id)
   end
 
 end
