@@ -2,6 +2,7 @@ class Friendship < ApplicationRecord
   belongs_to :user
   belongs_to :friend, class_name: 'User'
   belongs_to :bar, optional: true
+<<<<<<< HEAD
 
   validates :user_id, presence: true
   validates :friend_id, presence: true
@@ -15,4 +16,6 @@ class Friendship < ApplicationRecord
   def cannot_be_self_friend
     errors.add(:friend_id, "can't be the same as user") if user_id == friend_id
   end
+=======
+>>>>>>> upstream/main
 end
