@@ -1,23 +1,15 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
-<<<<<<< HEAD
   include Authenticable
   before_action :verify_jwt_token, only: [:create, :update]
   before_action :set_user, only: [:show, :update, :friendships, :create_friendship]  
-=======
-  before_action :set_user, only: [:show, :update]  
->>>>>>> upstream/main
   
   def index
     @users = User.includes(:reviews, :address).all   
   end
 
   def show
-<<<<<<< HEAD
     render json: @user, include: [:address, :reviews, :friendships]
-=======
-  
->>>>>>> upstream/main
   end
 
   def create
@@ -38,7 +30,6 @@ class API::V1::UsersController < ApplicationController
     end
   end
 
-<<<<<<< HEAD
   #CAMBIOS PARA FRIENDSHIP
   #GET friendships
   def friendships
@@ -55,8 +46,6 @@ class API::V1::UsersController < ApplicationController
     end
   end
 
-=======
->>>>>>> upstream/main
   private
 
   def set_user
@@ -71,12 +60,9 @@ class API::V1::UsersController < ApplicationController
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]
             })
   end
-<<<<<<< HEAD
 
   def friendship_params
     params.require(:friendship).permit(:friend_id)
   end
 
-=======
->>>>>>> upstream/main
 end
