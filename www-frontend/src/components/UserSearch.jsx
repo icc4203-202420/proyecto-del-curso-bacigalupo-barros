@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; //para futura implementación de los requests
 import { TextField, Button, Container, Typography } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const UserSearch = () => {
     const [handle, setHandle] = useState("");
@@ -18,7 +19,7 @@ const UserSearch = () => {
                 Search User by Handle
             </Typography>
             <TextField
-                label="User's Handle"
+                label="User's Handle" 
                 variant="outlined"
                 value={handle}
                 onChange={handleInputChange}
@@ -40,7 +41,7 @@ const UserSearch = () => {
                 color="primary"
                 onClick={handleSearch}
             >
-                Search
+                <AccountCircleIcon /> Search
             </Button>
         </Container>
     );
