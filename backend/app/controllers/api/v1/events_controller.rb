@@ -5,6 +5,13 @@ class API::V1::EventsController < ApplicationController
     before_action :set_event, only: [:show, :update, :destroy]
     respond_to :json
     #flyer = image
+    
+    #def index
+    #    bar = Bar.find(params[:bar_id])
+    #    events = bar.events
+    #    render json: { events: events }
+    #end
+
     #GET /api/v1/events/:id
     def show
         if @event.flyer.attached?
