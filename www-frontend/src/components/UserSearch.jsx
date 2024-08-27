@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; //para futura implementación de los requests
 import { TextField, Button, Container, Typography } from '@mui/material';
 
 const UserSearch = () => {
