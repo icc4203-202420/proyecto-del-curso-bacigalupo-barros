@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Typography, Container, Card, CardContent,Paper, Grid, CircularProgress } from '@mui/material';
 
 const Bars = () => {
@@ -7,8 +8,9 @@ const Bars = () => {
     useEffect(() => {
         const fetchBars = async () => { 
             try {
-                const response = await fetch("http://127.0.0.1:3001/api/v1/bars"); 
-                const data = await response.json();
+                const bar_url = `http://127.0.0.1:3001/api/v1/bars`;
+                const response = await axios.get(bar_url); 
+                const data = await response.data;
 
                 if (data.bars) { 
                     setBars(data.bars);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Typography, Container, Card, CardContent, Grid, CircularProgress } from '@mui/material';
 
 const Beers = () => {
@@ -7,8 +8,9 @@ const Beers = () => {
     useEffect(() => {
         const fetchBeers = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:3001/api/v1/beers");
-                const data = await response.json();
+                const beer_url = `http://127.0.0.1:3001/api/v1/beers`;
+                const response = await axios.get(beer_url);
+                const data = await response.data;
 
                 if (data.beers) { 
                     setBeers(data.beers);
