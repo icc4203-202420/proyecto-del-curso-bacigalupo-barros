@@ -11,11 +11,11 @@ import LocalBarIcon from '@mui/icons-material/Storefront';
 import Beers from './components/Beer';
 import Bars from './components/Bar';
 import UserSearch from './components/UserSearch';
+import Events from './components/Events';
 
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -79,6 +79,7 @@ function App() {
         <Route path="/beers" element={<Beers />} />
         <Route path="/bars" element={<Bars />} />
         <Route path="/usersearch" element={<UserSearch />} />
+        <Route path="/bars/:bar_id/events" element={<Events />} />
       </Routes>
     </>
   );
