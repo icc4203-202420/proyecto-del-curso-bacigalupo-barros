@@ -3,14 +3,15 @@ class API::V1::EventsController < ApplicationController
     include Authenticable
     before_action :verify_jwt_token, only: [:create, :update, :destroy]
     before_action :set_event, only: [:show, :update, :destroy]
+    before_action :set_bar, only: [:index, :create]
     respond_to :json
     #flyer = image
     
-    #def index
-    #    bar = Bar.find(params[:bar_id])
-    #    events = bar.events
-    #    render json: { events: events }
-    #end
+    #comentar si es que falla
+    def index
+        events = @bar.events
+        render json: { events: events }, status: :ok
+    end
 
     #GET /api/v1/events/:id
     def show
@@ -26,7 +27,8 @@ class API::V1::EventsController < ApplicationController
 
     #POST /api/v1/events
     def create
-        @event = Event.new(event_params.except(:flyer_base64))
+        @event = @bar.events.build(event_params.except(:flyer_base64))
+        #@event = Event.new(event_params.except(:flyer_base64))
         handle_flyer_attachment if event_params[:flyer_base64]
 
         if @event.save
@@ -60,6 +62,11 @@ class API::V1::EventsController < ApplicationController
     def set_event
         @event = Event.find_by(id: params[:id])
         render json: { error: 'Event not found' }, status: :not_found if @event.nil?
+    end
+    
+    def set_bar
+        @bar = Bar.find(params[:bar_id])
+        render json: { error: 'Bar not found' }, status: :not_found if @bar.nil?
     end
     
     def event_params
