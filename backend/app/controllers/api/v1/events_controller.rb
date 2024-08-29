@@ -3,7 +3,7 @@ class API::V1::EventsController < ApplicationController
     include Authenticable
     before_action :verify_jwt_token, only: [:create, :update, :destroy]
     before_action :set_event, only: [:show, :update, :destroy]
-    before_action :set_bar, only: [:index, :create]
+    before_action :set_bar, only: [:index]
     respond_to :json
     #flyer = image
     
@@ -27,8 +27,8 @@ class API::V1::EventsController < ApplicationController
 
     #POST /api/v1/events
     def create
-        @event = @bar.events.build(event_params.except(:flyer_base64))
-        #@event = Event.new(event_params.except(:flyer_base64))
+        #@event = @bar.events.build(event_params.except(:flyer_base64))
+        @event = Event.new(event_params.except(:flyer_base64))
         handle_flyer_attachment if event_params[:flyer_base64]
 
         if @event.save
