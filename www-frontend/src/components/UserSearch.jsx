@@ -15,7 +15,13 @@ const UserSearch = () => {
 
     return (
         <Container style={{ marginTop: '20px', textAlign: 'center' }}>
-            <Typography variant="h2" gutterBottom>
+            <Typography variant="h2" 
+                sx={{ 
+                    marginBottom: 3, 
+                    textAlign: 'center', 
+                    color: "#000000",
+                    fontFamily: 'Times New Roman, serif'
+                }}>
                 Search User by Handle
             </Typography>
             <TextField
@@ -26,12 +32,12 @@ const UserSearch = () => {
                 style={{ marginBottom: '20px', width: '300px' }}
                 InputProps={{
                     style: {
-                        color: 'white', //visible text
+                        color: 'black', //visible text
                     },
                 }}
                 InputLabelProps={{
                     style: {
-                        color: 'white', // visible label
+                        color: 'black', // visible label
                     },
                 }}
             />

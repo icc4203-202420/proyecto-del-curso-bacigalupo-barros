@@ -27,14 +27,26 @@ const Events = () => {
 
     return (
         <Container>
-            <Typography variant="h2" gutterBottom align="center">
+            <Typography variant="h2" 
+                sx={{ 
+                    marginBottom: 3, 
+                    color: '#000000',
+                    textAlign: 'center', 
+                    fontFamily: 'Times New Roman, serif'
+                }}>
                 Eventos del bar
             </Typography>
             {events ? (
                 <Grid item xs={3}>
                     {events.map((event) => (
                             <Card elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
-                                <Typography variant="h6">
+                                <Typography variant="h5" 
+                                sx={{ 
+                                    marginBottom: 3, 
+                                    color: '#000000',
+                                    textAlign: 'center', 
+                                    fontFamily: 'Times New Roman, serif'
+                                }}>
                                     Nombre: {event.name}
                                 </Typography>
                                 <Typography>

@@ -22,7 +22,7 @@ function App() {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: '#e7c12a' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#A020F0' }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -88,7 +88,13 @@ function App() {
 function Home(){
   return(
     <Card sx={{ margin: 2, maxWidth: 600, mx: "auto" }}>
-      <CardContent>
+      <CardContent sx={{ 
+                      maxWidth: 345, 
+                      boxShadow: 3, 
+                      borderRadius: 2, 
+                      backgroundColor: '#A020F0', 
+                      color: '#ffffff'
+                    }}>
         <BeerIcon />
         <Typography variant="h5" component="div" gutterBottom>
              Welcome to BarMan 
