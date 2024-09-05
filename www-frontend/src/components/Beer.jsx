@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BeerIcon from '@mui/icons-material/SportsBar';
-import { Typography, Container, Card, CardContent, Grid, CircularProgress, TextField } from '@mui/material';
+import { Typography, Container, Card, CardContent, Grid, CircularProgress, TextField, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const Beers = () => {
     const [beers, setBeers] = useState(null);
@@ -32,6 +33,7 @@ const Beers = () => {
     const filteredBeers = beers?.filter((beer) =>
         beer.name.toLowerCase().includes(searchTerm)
     );
+
 
     return (
         <Container>
@@ -73,6 +75,19 @@ const Beers = () => {
                                     <Typography variant="body2" color="textSecondary">
                                         Alcohol level: {beer.alcohol}
                                     </Typography>
+                                    <Button
+                                    component={Link}
+                                    to={`/beers/${beer.id}`}
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ 
+                                        marginTop: 2, 
+                                        borderRadius: 1, 
+                                        paddingX: 2
+                                    }}
+                                >
+                                    Ver Detalle
+                                </Button>
                                 </CardContent>
                             </Card>
                         </Grid>
