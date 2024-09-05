@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, CircularProgress, Card, CardContent, Button } from '@mui/material';
+import BeerReviews from './BeerReviews';
+
 
 const BeerDetails = () => {
     const { id } = useParams();
@@ -48,13 +50,15 @@ const BeerDetails = () => {
                                     color="primary"
                                     style={{ marginTop: '16px' }}
                                 >
-                                    Vuelta a Beers
+                                    Return to Beers
                                 </Button>
                     </CardContent>
                 </Card>
             ) : (
                 <Typography variant="h6">No details available for this beer.</Typography>
             )}
+            <BeerReviews beerId={id} />
+
         </Container>
     );
 };
