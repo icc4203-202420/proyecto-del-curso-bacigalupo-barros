@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Slider, TextField, Button, Typography, Box } from '@mui/material';
+import { Typography } from '@mui/material';
+import AddReview from './AddReview';
 
 const BeerReviews = ({ beerId }) => {
-    console.log("BeerReviews component is rendering for beerId:", beerId);
     const [reviews, setReviews] = useState([]);
-    const [newReview, setNewReview] = useState({
-        text: '',
-        rating: 3,
-    });
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -22,59 +18,29 @@ const BeerReviews = ({ beerId }) => {
         fetchReviews();
     }, [beerId]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (newReview.text.split(" ").length < 15) {
-            alert("La reseña debe tener al menos 15 palabras.");
-            return;
-        }
-
-        try {
-            await axios.post(`http://127.0.0.1:3001/api/v1/reviews`, {
-                ...newReview,
-                beer_id: beerId
-            });
-            // Actualiza la lista de reseñas después de enviar una nueva
-            setReviews([...reviews, newReview]);
-            setNewReview({ text: '', rating: 3 });
-        } catch (error) {
-            console.error("Error submitting review:", error);
-        }
+    const handleNewReview = (newReview) => {
+        setReviews([...reviews, newReview]);
     };
 
     return (
-        <Box>
+        <div style={{ marginTop: '20px' }}>
             <Typography variant="h5">Reviews</Typography>
-            {reviews.map((review, index) => (
-                <Box key={index} mt={2} mb={2}>
-                    <Typography variant="body1">{review.text}</Typography>
-                    <Typography variant="body2">Rating: {review.rating}</Typography>
-                </Box>
-            ))}
-
-            <form onSubmit={handleSubmit}>
-                <TextField
-                    label="Escribe tu evaluación"
-                    fullWidth
-                    multiline
-                    rows={4}
-                    value={newReview.text}
-                    onChange={(e) => setNewReview({ ...newReview, text: e.target.value })}
-                    required
-                />
-                <Slider
-                    value={newReview.rating}
-                    onChange={(e, newValue) => setNewReview({ ...newReview, rating: newValue })}
-                    aria-labelledby="rating-slider"
-                    step={1}
-                    marks
-                    min={1}
-                    max={5}
-                    valueLabelDisplay="auto"
-                />
-                <Button type="submit" variant="contained" color="primary">Enviar evaluación</Button>
-            </form>
-        </Box>
+            {reviews.length > 0 ? (
+                reviews.map((review) => (
+                    <div key={review.id}>
+                        <Typography variant="body2">
+                            <strong>Rating:</strong> {review.rating} / 5
+                        </Typography>
+                        <Typography variant="body2">
+                            {review.text}
+                        </Typography>
+                    </div>
+                ))
+            ) : (
+                <Typography variant="body1">No reviews yet.</Typography>
+            )}
+            <AddReview beerId={beerId} onNewReview={handleNewReview} />
+        </div>
     );
 };
 
