@@ -18,9 +18,9 @@ const AddReview = ({ beerId, onNewReview }) => {
                 rating,
                 text: reviewText,
             });
-            onNewReview(response.data.review);  // Update the reviews list
+            onNewReview(response.data.review);  
             setReviewText('');
-            setRating(3);  // Reset the form
+            setRating(3);  
         } catch (error) {
             console.error("Error submitting review:", error);
         }
