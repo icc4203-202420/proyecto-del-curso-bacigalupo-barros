@@ -1,4 +1,3 @@
-// src/components/Logout.js
 import React from 'react';
 import axios from 'axios';
 import { Button } from '@mui/material';
@@ -8,7 +7,7 @@ const LogOut = ({ onLogout }) => {
     try {
       await axios.delete('http://127.0.0.1:3001/api/v1/logout', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`, //lo mismo aquí, no sabemos que es que pasa pq siempre ssale undefined
         },
       });
 
