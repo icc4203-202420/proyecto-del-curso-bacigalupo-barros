@@ -19,14 +19,14 @@ const LogIn = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:3001/api/v1/login', { user: formData });
-      const token = response.data.token; // Adjust based on your actual API response
-
+      const token = response.data.token; //por alguna razón, token siempre sale undefined, no sabemos como arreglarlo
+      console.log(token)
       localStorage.setItem('authToken', token);
       setSuccessMessage('Login successful!');
       setErrorMessage('');
       console.log('Full Response:', response);
+      console.log("por alguna razón, token siempre sale undefined, no sabemos como arreglarlo")
     } catch (error) {
-      // Handle errors
       setErrorMessage(error.response?.data?.status?.message || 'An error occurred.');
       setSuccessMessage('');
     }

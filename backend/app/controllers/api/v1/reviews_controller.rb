@@ -20,7 +20,10 @@ class API::V1::ReviewsController < ApplicationController
     end
   end
   
-
+  def show
+    render json: @review
+  end
+  
   def create
     @beer = Beer.find(params[:beer_id])
     @review = @beer.reviews.new(review_params)
