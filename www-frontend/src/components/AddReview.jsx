@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Slider, Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 
-const AddReview = ({ beerId, onNewReview }) => {
+const AddReview = ({ id, onNewReview }) => {
     const [rating, setRating] = useState(3);
     const [reviewText, setReviewText] = useState('');
     const [error, setError] = useState('');
@@ -14,7 +14,7 @@ const AddReview = ({ beerId, onNewReview }) => {
         }
 
         try {
-            const response = await axios.post(`http://127.0.0.1:3001/api/v1/beers/${beerId}/reviews`, {
+            const response = await axios.post(`http://127.0.0.1:3001/api/v1/beers/${id}/reviews`, {
                 rating,
                 text: reviewText,
             });
