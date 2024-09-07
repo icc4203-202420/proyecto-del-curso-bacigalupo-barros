@@ -55,7 +55,7 @@ const BeerDetails = () => {
                             </Typography>
 
                             {brewery && (
-                                <Typography variant="body1">
+                                <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>
                                     <strong>Brewery:</strong> {brewery.name} (Established: {brewery.estdate})
                                 </Typography>
                             )}
@@ -72,7 +72,6 @@ const BeerDetails = () => {
                             ) : (
                                 <Typography variant="body1">No bars serving this beer.</Typography>
                             )}
-
                             <Button
                                 component={Link}
                                 to="/beers"
@@ -82,11 +81,20 @@ const BeerDetails = () => {
                             >
                                 Back to Beers
                             </Button>
+
                         </CardContent>
                     </Card>
-                    
-                    {/* Component for displaying beer reviews */}
-                    <BeerReviews beerId={id} />
+                    <Button
+                        component={Link}
+                        to={`/beers/${id}/reviews`}
+                        variant="contained"
+                        color="primary"
+                        style={{ marginTop: '16px' }}
+                    >
+                        Ver todos los reviews
+                    </Button>
+
+                    {/*<BeerReviews beerId={id} />*/}
                 </>
             ) : (
                 <Typography variant="h6">No details available for this beer.</Typography>

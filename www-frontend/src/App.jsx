@@ -16,6 +16,7 @@ import Events from './components/Events';
 import SignUp from './components/SignUp';
 import LogIn from './components/LogIn';
 import BeerDetails from './components/BeerDetails';
+import BeerReviews from './components/BeerReviews';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -126,6 +127,7 @@ function App() {
         <Route path="/usersearch" element={isLoggedIn ? <UserSearch /> : <RedirectToLogin />} />
         <Route path="/bars/:bar_id/events" element={isLoggedIn ? <Events /> : <RedirectToLogin />} />
         <Route path="/beers/:id" element={isLoggedIn ? <BeerDetails /> : <RedirectToLogin />} />
+        <Route path="/beers/:id/reviews" element={isLoggedIn ? <BeerReviews /> : <RedirectToLogin />} />
       </Routes>
     </>
   );
