@@ -41,16 +41,16 @@ const BeerDetails = () => {
                 <>
                     <Card>
                         <CardContent>
-                            <Typography variant="h3" gutterBottom>Beer Details</Typography>
-                            <Typography variant="body1"><strong>Name:</strong> {beer.name}</Typography>
-                            <Typography variant="body1"><strong>Style:</strong> {beer.style}</Typography>
-                            <Typography variant="body1"><strong>Hop:</strong> {beer.hop}</Typography>
-                            <Typography variant="body1"><strong>Yeast:</strong> {beer.yeast}</Typography>
-                            <Typography variant="body1"><strong>Malts:</strong> {beer.malts}</Typography>
-                            <Typography variant="body1"><strong>IBU:</strong> {beer.ibu}</Typography>
-                            <Typography variant="body1"><strong>Alcohol Level:</strong> {beer.alcohol}</Typography>
-                            <Typography variant="body1"><strong>BLG:</strong> {beer.blg}</Typography>
-                            <Typography variant="body1">
+                            <Typography variant="h3" gutterBottom sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>Beer Details</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Name:</strong> {beer.name}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Style:</strong> {beer.style}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Hop:</strong> {beer.hop}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Yeast:</strong> {beer.yeast}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Malts:</strong> {beer.malts}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>IBU:</strong> {beer.ibu}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Alcohol Level:</strong> {beer.alcohol}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>BLG:</strong> {beer.blg}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>
                                 <strong>Average Rating:</strong> {beer.avg_rating ? beer.avg_rating.toFixed(2) : 'No ratings yet'}
                             </Typography>
 
