@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, TextField, Button, Typography, Alert } from '@mui/material';
 
-const LogIn = () => {
+const LogIn = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,13 +19,14 @@ const LogIn = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:3001/api/v1/login', { user: formData });
-      const token = response.data.token; //por alguna razón, token siempre sale undefined, no sabemos como arreglarlo
-      console.log(token)
-      localStorage.setItem('authToken', token);
-      setSuccessMessage('Login successful!');
-      setErrorMessage('');
-      console.log('Full Response:', response);
-      console.log("por alguna razón, token siempre sale undefined, no sabemos como arreglarlo")
+      const token = response.data.status.token; 
+      if (token) {
+        onLogin(token); 
+        setSuccessMessage('Login successful!');
+        setErrorMessage('');
+      } else {
+        setErrorMessage('Unable to retrieve token. Please try again.');
+      }
     } catch (error) {
       setErrorMessage(error.response?.data?.status?.message || 'An error occurred.');
       setSuccessMessage('');
@@ -76,8 +77,8 @@ const LogIn = () => {
         onChange={handleChange}
         required
       />
-      <Button type="submit" variant="contained" color="primary" size="large">
-        Login
+      <Button type="submit" variant="contained" sx={{ bgcolor: '#A020F0' }}>
+        Log In
       </Button>
     </Box>
   );

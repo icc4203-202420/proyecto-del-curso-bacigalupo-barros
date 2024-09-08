@@ -1,6 +1,7 @@
 class API::V1::ReviewsController < ApplicationController
+  include Authenticable
   respond_to :json
-  before_action :authenticate_user!, only: [:create, :update, :destroy]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
   before_action :set_review, only: [:show, :update, :destroy]
 
   def index
@@ -21,9 +22,13 @@ class API::V1::ReviewsController < ApplicationController
   end
   
   def show
-    render json: @review
+    if @review
+      render json: { review: @review }, status: :ok
+    else
+      render json: { error: "Review not found" }, status: :not_found
+    end
   end
-  
+
   def create
     @beer = Beer.find(params[:beer_id])
     @review = @beer.reviews.new(review_params)
@@ -52,7 +57,8 @@ class API::V1::ReviewsController < ApplicationController
   private
 
   def set_review
-    @review = Review.find(params[:id])
+    @review = Review.find_by(id: params[:id])
+    render json: { error: "Review not found" }, status: :not_found unless @review
   end
 
   def review_params
