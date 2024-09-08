@@ -86,7 +86,7 @@ const Beers = () => {
                                         paddingX: 2
                                     }}
                                 >
-                                    Ver Detalle
+                                    Details
                                 </Button>
                                 </CardContent>
                             </Card>

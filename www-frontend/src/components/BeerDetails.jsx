@@ -91,7 +91,7 @@ const BeerDetails = () => {
                         color="primary"
                         style={{ marginTop: '16px' }}
                     >
-                        Ver todos los reviews
+                        Reviews
                     </Button>
 
                     {/*<BeerReviews beerId={id} />*/}

@@ -7,7 +7,7 @@ class API::V1::SessionsController < Devise::SessionsController
     JWT.encode(payload, Rails.application.credentials.devise_jwt_secret_key, 'HS256')
   end
   def respond_with(current_user, _opts = {})
-    token = encode_token({sub: resource.id, jti: SecureRandom.uuid})
+    token = encode_token({sub: resource.id})
     render json: {
       status: { 
         code: 200, message: 'Logged in successfully.',

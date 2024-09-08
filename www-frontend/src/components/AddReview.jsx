@@ -13,8 +13,9 @@ const AddReview = ({ id, onNewReview }) => {
             return;
         }
 
-        const token = localStorage.getItem('authToken');
-        console.log("hola", token)
+        const aux_token = localStorage.getItem('authToken');
+        //console.log("hola", token)
+        const token = aux_token.replace(/"/g, '');
         try {
             const response = await axios.post(
                 `http://127.0.0.1:3001/api/v1/beers/${id}/reviews`,
@@ -22,8 +23,12 @@ const AddReview = ({ id, onNewReview }) => {
                     review: {
                         text: reviewText,
                         rating: rating
-                    },
-                    token: token 
+                    }
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, 
+                    }
                 }
             );
             onNewReview(response.data.review);  
