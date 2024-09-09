@@ -3,7 +3,6 @@ class API::V1::SessionsController < Devise::SessionsController
   respond_to :json
 
   private
-
   def respond_with(current_user, _opts = {})
     token = encode_token({ sub: resource.id, jti: current_user.jti, scp: 'user' })
 
@@ -25,7 +24,6 @@ class API::V1::SessionsController < Devise::SessionsController
         current_user = User.find(jwt_payload['sub'])
 
         if current_user
-          # Eliminar el token actual de la lista válida al cerrar sesión
           render json: { status: 200, message: 'Logged out successfully.' }, status: :ok
         else
           render json: { status: 401, message: "Couldn't find an active session." }, status: :unauthorized
@@ -41,10 +39,9 @@ class API::V1::SessionsController < Devise::SessionsController
   private
 
   def encode_token(payload)
-    # Configura la expiración y otros campos
     payload[:iat] = Time.now.to_i
     payload[:exp] = (Time.now + 24.hours).to_i
-    payload[:aud] = nil # Audiencia configurada como null
+    payload[:aud] = nil 
     JWT.encode(payload, Rails.application.credentials.devise_jwt_secret_key, 'HS256')
   end
 end
