@@ -19,9 +19,10 @@ class Beer < ApplicationRecord
 
   def update_avg_rating
     if reviews.any?
-      update(avg_rating: reviews.average(:rating).to_f)
+      self.avg_rating = reviews.average(:rating).to_f
     else
-      update(avg_rating: 0.0)
+      self.avg_rating = 0
     end
-  end  
+    save
+  end
 end

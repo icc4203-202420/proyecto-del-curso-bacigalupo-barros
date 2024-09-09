@@ -1,13 +1,26 @@
 class API::V1::ReviewsController < ApplicationController
+  include Authenticable
   respond_to :json
-  before_action :set_user, only: [:index, :create]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy]
   before_action :set_review, only: [:show, :update, :destroy]
 
   def index
-    @reviews = Review.where(user: @user)
-    render json: { reviews: @reviews }, status: :ok
+    if params[:beer_id]
+      @beer = Beer.find(params[:beer_id])
+      @reviews = @beer.reviews.includes(:user)
+      user_review = @reviews.find_by(user: current_user)
+  
+      render json: {
+        reviews: @reviews.as_json(include: { user: { only: [:id, :first_name, :last_name] } }),
+        user_review: user_review,
+        average_rating: @beer.avg_rating
+      }
+    else
+      @reviews = Review.all
+      render json: @reviews
+    end
   end
-
+  
   def show
     if @review
       render json: { review: @review }, status: :ok
@@ -17,19 +30,22 @@ class API::V1::ReviewsController < ApplicationController
   end
 
   def create
-    @review = @user.reviews.build(review_params)
+    @beer = Beer.find(params[:beer_id])
+    @review = @beer.reviews.new(review_params)
+    @review.user = current_user
+
     if @review.save
-      render json: @review, status: :created, location: api_v1_review_url(@review)
+      render json: @review, status: :created
     else
-      render json: @review.errors, status: :unprocessable_entity
+      render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   def update
     if @review.update(review_params)
-      render json: @review, status: :ok
+      render json: @review
     else
-      render json: @review.errors, status: :unprocessable_entity
+      render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -45,11 +61,7 @@ class API::V1::ReviewsController < ApplicationController
     render json: { error: "Review not found" }, status: :not_found unless @review
   end
 
-  def set_user
-    @user = User.find(params[:user_id]) 
-  end
-
   def review_params
-    params.require(:review).permit(:id, :text, :rating, :beer_id)
+    params.require(:review).permit(:text, :rating)
   end
 end
