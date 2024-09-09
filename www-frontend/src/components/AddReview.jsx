@@ -8,30 +8,31 @@ const AddReview = ({ id, onNewReview }) => {
     const [error, setError] = useState('');
 
     const handleSubmit = async () => {
-        if (reviewText.length < 15) {
+        if (reviewText.length <= 15) {
             setError('The review must be at least 15 characters long.');
             return;
         }
 
         const aux_token = localStorage.getItem('authToken');
-        //console.log("hola", token)
-        const token = aux_token.replace(/"/g, '');
+        const token = aux_token;
+        console.log(token);
+
         try {
             const response = await axios.post(
                 `http://127.0.0.1:3001/api/v1/beers/${id}/reviews`,
                 {
                     review: {
                         text: reviewText,
-                        rating: rating
+                        rating: rating,
                     }
                 },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, 
-                    }
+                        Authorization: `Bearer ${token}`
+                    }         
                 }
             );
-            onNewReview(response.data.review);  
+            onNewReview(response.data.review);
             setReviewText('');
             setRating(3);  
         } catch (error) {

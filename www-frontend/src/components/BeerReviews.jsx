@@ -47,7 +47,6 @@ const BeerReviews = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                // Fetch de reseñas
                 const reviewsResponse = await axios.get(`http://127.0.0.1:3001/api/v1/beers/${id}/reviews`);
                 dispatch({
                     type: ACTIONS.FETCH_REVIEWS_SUCCESS,
@@ -98,22 +97,33 @@ const BeerReviews = () => {
                     </Typography>
 
                     {state.reviews.length > 0 ? (
-                        state.reviews.map((review) => (
-                            <div key={review.id} style={{ marginBottom: 2 }}>
+                        state.reviews.map((review, index) => (
+                            review && review.rating !== undefined ? (
+                                <div key={index} style={{ marginBottom: 2 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                                    >
+                                        <strong>Rating:</strong> {review.rating} / 5
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                                    >
+                                        {review.text}
+                                    </Typography>
+                                    <Divider sx={{ marginY: 1 }} />
+                                </div>
+                            ) : (
                                 <Typography
+                                    key={index}
                                     variant="body2"
-                                    sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                                    color="textSecondary"
+                                    sx={{ fontFamily: 'Times New Roman, serif', marginBottom: 2 }}
                                 >
-                                    <strong>Rating:</strong> {review.rating} / 5
+                                    Review data is not available (Recargar la página, solo así nos sirvió).
                                 </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
-                                >
-                                    {review.text}
-                                </Typography>
-                                <Divider sx={{ marginY: 1 }} />
-                            </div>
+                            )
                         ))
                     ) : (
                         <Typography
