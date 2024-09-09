@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_155040) do
     t.string "line1"
     t.string "line2"
     t.string "city"
-    t.integer "country_id"
+    t.integer "country_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
