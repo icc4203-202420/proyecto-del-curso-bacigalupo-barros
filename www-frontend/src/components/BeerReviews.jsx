@@ -4,6 +4,8 @@ import { Card, Typography, Container, CardContent, Divider, Button, CircularProg
 import AddReview from './AddReview';
 import { useParams, Link } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ArrowBack } from '@mui/icons-material';
+
 const initialState = {
     reviews: [],
     loading: true,
@@ -156,8 +158,23 @@ const BeerReviews = () => {
                 )}
             </Card>
 
-            <Button component={Link} to="/beers" variant="contained" sx={{ marginTop: 2, bgcolor: '#A020F0' }}>
-                Back to Beers
+            <Button
+                component={Link}
+                to="/beers"
+                variant="contained"
+                sx={{ 
+                    bgcolor: '#A020F0', 
+                    position: 'fixed', 
+                    top: 65, 
+                    left: 5, 
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'white'
+                }}
+                >
+                <ArrowBack sx={{ mr: 1 }} />
+                Vuelta a Beers
             </Button>
         </Container>
     );

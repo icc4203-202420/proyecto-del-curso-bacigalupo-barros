@@ -51,4 +51,19 @@ if Rails.env.development?
     end
   end
 
+  more_bars = [
+    { street: 'Av. Providencia', number: '1234', city: 'Santiago', country_name: 'Chile' },
+    { street: 'Calle Bellavista', number: '567', city: 'Santiago', country_name: 'Chile' },
+    { street: 'Av. Apoquindo', number: '7890', city: 'Santiago', country_name: 'Chile' }
+  ]
+  more_bars.each do |bar_data|
+    bar = FactoryBot.create(:bar)
+    bar.address.update(
+      street: bar_data[:street],
+      number: bar_data[:number],
+      city: bar_data[:city],
+      country: Country.find_by(name: bar_data[:country_name])
+    )
+    bar.beers << Beer.all.sample(rand(1..3))
+  end
 end
