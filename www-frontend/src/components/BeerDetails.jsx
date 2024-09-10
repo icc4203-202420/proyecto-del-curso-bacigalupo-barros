@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Container, Typography, CircularProgress, Card, CardContent, Button } from '@mui/material';
 import BeerReviews from './BeerReviews';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ArrowBack } from '@mui/icons-material';
+
 
 const BeerDetails = () => {
     const { id } = useParams();
@@ -89,10 +91,19 @@ const BeerDetails = () => {
                         component={Link}
                         to="/beers"
                         variant="contained"
-                        sx={{ bgcolor: '#A020F0' }}
-                        style={{ marginTop: '16px' }}
-                    >
-                        Back to Beers
+                        sx={{ 
+                            bgcolor: '#A020F0', 
+                            position: 'fixed', 
+                            top: 65, 
+                            left: 5, 
+                            zIndex: 9999,
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'white'
+                        }}
+                        >
+                        <ArrowBack sx={{ mr: 1 }} />
+                        Vuelta a Beers
                     </Button>
 
                     {/*<BeerReviews beerId={id} />*/}
