@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, CircularProgress, Card, CardContent, Button } from '@mui/material';
 import BeerReviews from './BeerReviews';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 const BeerDetails = () => {
     const { id } = useParams();
@@ -74,24 +75,24 @@ const BeerDetails = () => {
                             )}
                             <Button
                                 component={Link}
-                                to="/beers"
+                                to={`/beers/${id}/reviews`}
                                 variant="contained"
-                                color="primary"
+                                sx={{ bgcolor: '#A020F0' }}
                                 style={{ marginTop: '16px' }}
                             >
-                                Back to Beers
+                                <StarBorderIcon/> Reviews
                             </Button>
 
                         </CardContent>
                     </Card>
                     <Button
                         component={Link}
-                        to={`/beers/${id}/reviews`}
+                        to="/beers"
                         variant="contained"
-                        color="primary"
+                        sx={{ bgcolor: '#A020F0' }}
                         style={{ marginTop: '16px' }}
                     >
-                        Reviews
+                        Back to Beers
                     </Button>
 
                     {/*<BeerReviews beerId={id} />*/}

@@ -59,7 +59,7 @@ const Events = () => {
                                     component={Link}
                                     to= "/bars"
                                     variant="contained"
-                                    color="primary"
+                                    sx={{ bgcolor: '#A020F0' }}
                                     style={{ marginTop: '16px' }}
                                 >
                                     Vuelta a Bars

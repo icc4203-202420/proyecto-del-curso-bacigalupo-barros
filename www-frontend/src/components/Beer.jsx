@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import BeerIcon from '@mui/icons-material/SportsBar';
-import { Typography, Container, Card, CardContent, Grid, CircularProgress, TextField, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Typography, Container, Card, CardContent, Grid, CircularProgress, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; 
 
 const Beers = () => {
     const [beers, setBeers] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    
+    const navigate = useNavigate(); 
+
     useEffect(() => {
         const fetchBeers = async () => {
             try {
@@ -15,7 +16,7 @@ const Beers = () => {
                 const response = await axios.get(beer_url);
                 const data = await response.data;
 
-                if (data.beers) { 
+                if (data.beers) {
                     setBeers(data.beers);
                 }
             } catch (error) {
@@ -30,20 +31,25 @@ const Beers = () => {
         setSearchTerm(event.target.value.toLowerCase());
     };
 
+    const handleCardClick = (id) => {
+        navigate(`/beers/${id}`);
+    };
+
     const filteredBeers = beers?.filter((beer) =>
         beer.name.toLowerCase().includes(searchTerm)
     );
 
-
     return (
         <Container>
-            <Typography variant="h2" 
-                sx={{ 
-                    marginBottom: 3, 
+            <Typography
+                variant="h2"
+                sx={{
+                    marginBottom: 3,
                     color: '#000000',
-                    textAlign: 'center', 
-                    fontFamily: 'Times New Roman, serif'
-                }}>
+                    textAlign: 'center',
+                    fontFamily: 'Times New Roman, serif' 
+                }}
+            >
                 Lista de Cervezas
             </Typography>
             <TextField
@@ -55,15 +61,32 @@ const Beers = () => {
                 value={searchTerm}
             />
             {beers ? (
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     {filteredBeers.map((beer) => (
                         <Grid item xs={12} sm={6} md={4} key={beer.id}>
-                            <Card>
+                            <Card
+                                sx={{
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        boxShadow: 6, // Efecto al pasar el mouse
+                                    },
+                                }}
+                                onClick={() => handleCardClick(beer.id)} // Tarjeta como botón
+                            >
                                 <CardContent>
-                                    <Typography>
-                                        <BeerIcon /> 
+                                    <Typography align="center">
+                                        <BeerIcon fontSize="large" />
                                     </Typography>
-                                    <Typography variant="h5" sx={{ marginBottom: 2, color: '#000000',textAlign: 'center', fontFamily: 'Times New Roman, serif'}}>
+                                    <Typography
+                                        variant="h5"
+                                        sx={{
+                                            marginBottom: 1,
+                                            color: '#000000',
+                                            textAlign: 'center',
+                                            fontFamily: 'Times New Roman, serif',
+                                            fontSize: { xs: '1.2rem', md: '1.5rem' },
+                                        }}
+                                    >
                                         {beer.name}
                                     </Typography>
                                     <Typography variant="body2" color="textPrimary">
@@ -75,19 +98,6 @@ const Beers = () => {
                                     <Typography variant="body2" color="textSecondary">
                                         Alcohol level: {beer.alcohol}
                                     </Typography>
-                                    <Button
-                                    component={Link}
-                                    to={`/beers/${beer.id}`}
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{ 
-                                        marginTop: 2, 
-                                        borderRadius: 1, 
-                                        paddingX: 2
-                                    }}
-                                >
-                                    Details
-                                </Button>
                                 </CardContent>
                             </Card>
                         </Grid>
@@ -101,5 +111,5 @@ const Beers = () => {
         </Container>
     );
 };
-    
+
 export default Beers;
