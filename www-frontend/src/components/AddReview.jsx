@@ -67,7 +67,7 @@ const AddReview = ({ id, onNewReview }) => {
             <Button
                 onClick={handleSubmit}
                 variant="contained"
-                color="primary"
+                sx={{ bgcolor: '#A020F0' }}
                 style={{ marginTop: '10px' }}
             >
                 Submit Review
