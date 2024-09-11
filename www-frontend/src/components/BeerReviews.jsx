@@ -119,7 +119,7 @@ const BeerReviews = () => {
                                             variant="body2"
                                             sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
                                         >
-                                            <strong>Rating:</strong> {review.rating} / 5
+                                             <strong>{review.user.handle} | Rating:</strong> {review.rating} / 5
                                         </Typography>
                                         <Typography
                                             variant="body2"
