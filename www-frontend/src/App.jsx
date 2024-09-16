@@ -164,6 +164,10 @@ function RedirectToLogin() {
 }
 
 function Home() {
+  const [nearbyBars, setNearbyBars] = useState([]);
+  const handleNearbyBarsUpdate = (bars) => {
+    setNearbyBars(bars);
+  };
   return (
     <Card sx={{ margin: 2, maxWidth: 600, mx: "auto" }}>
       <CardContent sx={{

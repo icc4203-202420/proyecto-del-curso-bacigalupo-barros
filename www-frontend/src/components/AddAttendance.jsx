@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Typography, Button, CircularProgress } from '@mui/material';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const AddAttendance = ({ bar_id, event_id, onCheckIn }) => {
     const [isCheckingIn, setIsCheckingIn] = useState(false);
@@ -41,7 +42,7 @@ const AddAttendance = ({ bar_id, event_id, onCheckIn }) => {
                     variant="contained"
                     sx={{ bgcolor: '#A020F0' }}
                 >
-                    Check In
+                    Check In<CheckBoxIcon />
                 </Button>
             )}
             
