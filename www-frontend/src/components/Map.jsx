@@ -108,34 +108,45 @@ const Map = () => {
   // Búsqueda por dirección utilizando Geocoder API
   const handleSearch = async () => {
     const searchQuery = inputRef.current.value;
-
+  
     if (!libraries || !searchQuery) {
+      console.error("Librerías de Google Maps no cargadas o búsqueda vacía");
       return;
     }
-
+  
     const geocoder = new window.google.maps.Geocoder();
-
+  
+    // Realizar la búsqueda usando la Geocoder API
     geocoder.geocode({ address: searchQuery }, (results, status) => {
       if (status === 'OK') {
         const location = results[0].geometry.location;
         const formattedAddress = results[0].formatted_address;
-
+  
+        console.log('Resultados del geocoding:', results);  // Debug: Ver resultados en la consola
+  
         // Centrar el mapa en las coordenadas obtenidas
         mapRef.current.setCenter(location);
         mapRef.current.setZoom(14);
-
+  
+        // Colocar un marcador en la ubicación
         const marker = new google.maps.Marker({
           position: location,
           map: mapRef.current,
           title: formattedAddress,
         });
-
-        setSelectedBar({ name: formattedAddress, latitude: location.lat(), longitude: location.lng() });
+  
+        setSelectedBar({
+          name: formattedAddress,
+          latitude: location.lat(),
+          longitude: location.lng(),
+        });
+  
       } else {
         console.error('Geocode no tuvo éxito debido a: ' + status);
       }
     });
   };
+  
 
   if (!libraries) {
     return <h1>Cargando. . .</h1>;
