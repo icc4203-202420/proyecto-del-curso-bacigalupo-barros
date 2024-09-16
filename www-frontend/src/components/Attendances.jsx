@@ -48,7 +48,10 @@ const Attendances = ({ event_id }) => {
                         <Grid item xs={12} sm={6} md={4} key={attendance.user_id}>
                             <Card elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
                                 <Typography variant="h5" sx={{ marginBottom: 3, color: '#000000', textAlign: 'center', fontFamily: 'Times New Roman, serif' }}>
-                                    {attendance.first_name} {attendance.last_name} {attendance.handle}
+                                    {attendance.first_name} {attendance.last_name}
+                                </Typography>
+                                <Typography variant="h5" sx={{ marginBottom: 3, color: '#000000', textAlign: 'center', fontFamily: 'Times New Roman, serif' }}>
+                                    <strong>Handle: </strong>@{attendance.handle}
                                 </Typography>
                                 <Typography>
                                     Checked In: {attendance.checked_in ? 'Yes' : 'No'}

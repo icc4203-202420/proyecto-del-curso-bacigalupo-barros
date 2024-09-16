@@ -82,10 +82,13 @@ const Bars = () => {
                                         fontFamily: 'Times New Roman, serif'                                    
                                     }}
                                 >
-                                    {bar.name} | {bar.id}
+                                    {bar.name}
                                 </Typography>
                                 <Typography variant="body2">
-                                    Address ID: {bar.address_id}
+                                    <strong>Address:</strong> {bar.address.line1}
+                                </Typography>
+                                <Typography variant="body2">
+                                    <strong>City:</strong> {bar.address.city}
                                 </Typography>
                             </Paper>
                         </Grid>
