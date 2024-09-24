@@ -1,11 +1,12 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
   include Authenticable
-  before_action :verify_jwt_token, only: [:create, :update]
+  before_action :verify_jwt_token, only: [:create, :update, :create_friendship]
   before_action :set_user, only: [:show, :update, :friendships, :create_friendship]  
   
   def index
     @users = User.includes(:reviews, :address).all   
+    render json: { users: @users.as_json(include: [:address, :reviews]) }, status: :ok
   end
 
   def show
@@ -49,7 +50,12 @@ class API::V1::UsersController < ApplicationController
   private
 
   def set_user
-    @user = User.find(params[:id])
+    if params[:id].present?
+      @user = User.find_by(id: params[:id])
+      render json: { error: 'User not found' }, status: :not_found if @user.nil?
+    else
+      render json: { error: 'User ID is required' }, status: :bad_request
+    end
   end
 
   def user_params

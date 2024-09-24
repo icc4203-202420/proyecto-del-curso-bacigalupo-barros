@@ -9,8 +9,13 @@ class API::V1::EventsController < ApplicationController
     
     #comentar si es que falla
     def index
-        events = @bar.events
-        render json: { events: events }, status: :ok
+        if @bar
+            events = @bar.events
+            render json: { events: events }, status: :ok
+          else
+            events = Event.all
+            render json: { events: events }, status: :ok
+          end
     end
 
     #GET /api/v1/events/:id
@@ -65,6 +70,7 @@ class API::V1::EventsController < ApplicationController
     end
     
     def set_bar
+        return unless params[:bar_id]
         @bar = Bar.find(params[:bar_id])
         render json: { error: 'Bar not found' }, status: :not_found if @bar.nil?
     end

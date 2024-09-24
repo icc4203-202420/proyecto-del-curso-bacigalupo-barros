@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           resources :attendances, only: [:create, :index]
         end
       end
+      resources :events
       resources :reviews, only: [:create, :update, :destroy]
       resources :beers do
         resources :reviews
