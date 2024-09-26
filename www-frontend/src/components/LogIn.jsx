@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, TextField, Button, Typography, Alert } from '@mui/material';
 
-const LogIn = ({ onLogin }) => {
+const LogIn = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,17 +19,14 @@ const LogIn = ({ onLogin }) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:3001/api/v1/login', { user: formData });
-      console.log("token:", response.data.status.token)
-      const token = response.data.status.token; 
-      console.log("Login:", token)
-      if (token) {
-        onLogin(token); 
-        setSuccessMessage('Login successful!');
-        setErrorMessage('');
-      } else {
-        setErrorMessage('Unable to retrieve token. Please try again.');
-      }
+      const token = response.data.token; // Adjust based on your actual API response
+
+      localStorage.setItem('authToken', token);
+      setSuccessMessage('Login successful!');
+      setErrorMessage('');
+      console.log('Full Response:', response);
     } catch (error) {
+      // Handle errors
       setErrorMessage(error.response?.data?.status?.message || 'An error occurred.');
       setSuccessMessage('');
     }
@@ -79,8 +76,8 @@ const LogIn = ({ onLogin }) => {
         onChange={handleChange}
         required
       />
-      <Button type="submit" variant="contained" sx={{ bgcolor: '#A020F0' }}>
-        Log In
+      <Button type="submit" variant="contained" color="primary" size="large">
+        Login
       </Button>
     </Box>
   );

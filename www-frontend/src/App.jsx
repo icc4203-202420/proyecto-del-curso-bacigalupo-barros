@@ -15,31 +15,27 @@ import UserSearch from './components/UserSearch';
 import Events from './components/Events';
 import SignUp from './components/SignUp';
 import LogIn from './components/LogIn';
-import LogOut from './components/LogOut';
 import BeerDetails from './components/BeerDetails';
-import BeerReviews from './components/BeerReviews';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('authToken'));
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const toggleDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
 
   const handleLogin = (token) => {
-    if (token) {
-      localStorage.setItem('authToken', token);
-      setIsLoggedIn(true);
-      navigate('/');
-    }
+    localStorage.setItem('authToken', token);
+    setIsLoggedIn(true);
+    navigate('/'); 
   };
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     setIsLoggedIn(false);
-    navigate('/');
+    navigate('/'); 
   };
 
   return (
@@ -130,7 +126,6 @@ function App() {
         <Route path="/usersearch" element={isLoggedIn ? <UserSearch /> : <RedirectToLogin />} />
         <Route path="/bars/:bar_id/events" element={isLoggedIn ? <Events /> : <RedirectToLogin />} />
         <Route path="/beers/:id" element={isLoggedIn ? <BeerDetails /> : <RedirectToLogin />} />
-        <Route path="/beers/:id/reviews" element={isLoggedIn ? <BeerReviews /> : <RedirectToLogin />} />
       </Routes>
     </>
   );
@@ -157,11 +152,11 @@ function RedirectToLogin() {
 function Home() {
   return (
     <Card sx={{ margin: 2, maxWidth: 600, mx: "auto" }}>
-      <CardContent sx={{
-        maxWidth: 345,
-        boxShadow: 3,
-        borderRadius: 2,
-        backgroundColor: '#A020F0',
+      <CardContent sx={{ 
+        maxWidth: 345, 
+        boxShadow: 3, 
+        borderRadius: 2, 
+        backgroundColor: '#A020F0', 
         color: '#ffffff'
       }}>
         <BeerIcon />
