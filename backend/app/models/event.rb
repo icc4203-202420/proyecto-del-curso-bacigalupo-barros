@@ -13,6 +13,14 @@ class Event < ApplicationRecord
                                     message: 'must be a valid image format' },
                     size: { less_than: 5.megabytes }
 
+  def flyer_url
+    flyer.attached? ? Rails.application.routes.url_helpers.rails_blob_url(flyer, only_path: true) : nil
+  end
+
+  def event_picture_urls
+    event_pictures.map { |picture| Rails.application.routes.url_helpers.rails_blob_url(picture, only_path: true) }
+  end
+
   def thumbnail
     flyer.variant(resize_to_limit: [200, nil]).processed
   end  

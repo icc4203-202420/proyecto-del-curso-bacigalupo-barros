@@ -20,6 +20,7 @@ import LogOut from './components/LogOut';
 import BeerDetails from './components/BeerDetails';
 import BeerReviews from './components/BeerReviews';
 import Map from './components/Map'
+import EventGallery from './components/EventGallery';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -140,6 +141,7 @@ function App() {
         <Route path="/beers/:id" element={isLoggedIn ? <BeerDetails /> : <RedirectToLogin />} />
         <Route path="/beers/:id/reviews" element={isLoggedIn ? <BeerReviews /> : <RedirectToLogin />} />
         <Route path="/map" element={isLoggedIn ? <Map /> : <RedirectToLogin />}/>
+        <Route path="/events/:id" element={<EventGallery />} />
       </Routes>
     </>
   );

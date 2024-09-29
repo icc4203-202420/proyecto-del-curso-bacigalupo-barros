@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Typography, Container, Grid, CircularProgress, Snackbar, Button, Card } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import axios from 'axios';
 import Attendances from './Attendances';
 import AddAttendance from "./AddAttendance";
+import EventGallery from './EventGallery'; 
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -17,7 +18,8 @@ const Events = () => {
     const [events, setEvents] = useState(null);
     const { bar_id } = useParams();
     const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null); 
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchEvents = async () => { 
@@ -51,7 +53,12 @@ const Events = () => {
 
     const handleEventSelect = (event) => {
         console.log("Evento seleccionado:", event);
-        setSelectedEvent(event); 
+        setSelectedEvent(event);  
+    };
+
+    const handleViewImages = (event) => {
+        handleEventSelect(event);
+        navigate(`/events/${event.id}`, { state: { event } }); 
     };
 
     return (
@@ -65,84 +72,89 @@ const Events = () => {
                 }}>
                 Eventos del bar
             </Typography>
-
+    
             {selectedEvent ? (
-                <EventGallery event={selectedEvent} />
-            ) : events ? (
-                <Grid container spacing={2}>
-                    {events.map((event) => (
-                        <Grid item xs={12} sm={6} md={4} key={event.id}>
-                            <Card elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
-                                <Typography variant="h5" 
-                                    sx={{ 
-                                        marginBottom: 1, 
-                                        color: '#000000',
-                                        textAlign: 'center', 
-                                        fontFamily: 'Times New Roman, serif'
-                                    }}>
-                                    Nombre: {event.name}
-                                </Typography>
-                                <Typography>
-                                    Descripción: {event.description}
-                                </Typography>
-                                <Typography>
-                                    Fecha: {formatDate(event.date)}
-                                </Typography>
-                                <Typography>
-                                    Hora Inicio: {event.start_date}
-                                </Typography>
-                                <Typography>
-                                    Hora Fin: {event.end_date}
-                                </Typography>
-                                <Typography>
-                                    ID del Bar: {event.bar_id}
-                                </Typography>
-
-                                <AddAttendance bar_id={bar_id} event_id={event.id} onCheckIn={handleCheckIn} />
-                                <Attendances event_id={event.id} />
-                                <Button
-                                    component={Link}
-                                    to="/bars"
-                                    variant="contained"
-                                    sx={{ 
-                                        bgcolor: '#A020F0', 
-                                        position: 'fixed', 
-                                        top: 60, 
-                                        left: 5, 
-                                        zIndex: 9999,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        color: 'white'
-                                    }}
+                <EventGallery event={selectedEvent} /> 
+            ) : events !== null ? ( 
+                events.length > 0 ? ( 
+                    <Grid container spacing={2}>
+                        {events.map((event) => (
+                            <Grid item xs={12} sm={6} md={4} key={event.id}>
+                                <Card elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
+                                    <Typography variant="h5" 
+                                        sx={{ 
+                                            marginBottom: 1, 
+                                            color: '#000000',
+                                            textAlign: 'center', 
+                                            fontFamily: 'Times New Roman, serif'
+                                        }}>
+                                        Nombre: {event.name}
+                                    </Typography>
+                                    <Typography>
+                                        Descripción: {event.description}
+                                    </Typography>
+                                    <Typography>
+                                        Fecha: {formatDate(event.date)}
+                                    </Typography>
+                                    <Typography>
+                                        Hora Inicio: {event.start_date}
+                                    </Typography>
+                                    <Typography>
+                                        Hora Fin: {event.end_date}
+                                    </Typography>
+                                    <Typography>
+                                        ID del Bar: {event.bar_id}
+                                    </Typography>
+    
+                                    <AddAttendance bar_id={bar_id} event_id={event.id} onCheckIn={handleCheckIn} />
+                                    <Attendances event_id={event.id} />
+    
+                                    <Button
+                                        variant="contained"
+                                        sx={{ 
+                                            bgcolor: '#A020F0', 
+                                            color: 'white', 
+                                            marginTop: '16px'
+                                        }}
+                                        onClick={() => {
+                                            console.log("Botón Ver Imágenes clickeado para:", event); // Verifica que event no sea undefined
+                                            handleEventSelect(event);
+                                            handleViewImages(event);
+                                        }}
                                     >
-                                    <ArrowBack sx={{ mr: 1 }} />
-                                    Vuelta a Bars
-                                </Button>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                                        Ver Imágenes
+                                    </Button>
+    
+                                    <Button
+                                        component={Link}
+                                        to="/bars"
+                                        variant="contained"
+                                        sx={{ 
+                                            bgcolor: '#A020F0', 
+                                            position: 'fixed', 
+                                            top: 60, 
+                                            left: 5, 
+                                            zIndex: 9999,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            color: 'white'
+                                        }}
+                                    >
+                                        <ArrowBack sx={{ mr: 1 }} />
+                                        Volver a Bars
+                                    </Button>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : (
+                    <Typography>No hay eventos disponibles.</Typography>
+                )
             ) : (
                 <Grid container justifyContent="center">
                     <CircularProgress />
                 </Grid>
             )}
-
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                message="Has confirmado tu asistencia."
-                action={
-                    <Button color="inherit" onClick={handleSnackbarClose}>
-                        OK
-                    </Button>
-                }
-                anchorOrigin={{
-                    vertical: 'bottom', 
-                    horizontal: 'center', 
-                }}
-            />
         </Container>
     );
 }
