@@ -25,7 +25,6 @@ class API::V1::EventsController < ApplicationController
 
     #GET /api/v1/events/:id
     def show
-        # Asegúrate de que @event esté definido y no sea nil
         if @event
             event_json = @event.as_json
     
@@ -91,7 +90,22 @@ class API::V1::EventsController < ApplicationController
             render json: @event.errors, status: :unprocessable_entity
         end
     end
-
+    
+    def upload_picture
+        event = Event.find(params[:id])
+        
+        if params[:image].present?
+          event.event_pictures.attach(params[:image])
+          if event.save
+            render json: { message: 'Imagen subida exitosamente', picture_url: rails_blob_url(event.event_pictures.last) }, status: :ok
+          else
+            render json: { errors: event.errors.full_messages }, status: :unprocessable_entity
+          end
+        else
+          render json: { errors: 'No image provided' }, status: :unprocessable_entity
+        end
+      end
+      
     private
     
     def set_event
@@ -107,6 +121,10 @@ class API::V1::EventsController < ApplicationController
     
     def event_params
         params.require(:event).permit(:name, :description, :date, :bar_id, :flyer_base64, :start_date, :end_date, event_pictures_base64: [])
+    end
+
+    def picture_params
+        params.require(:image).permit(:image) 
     end
 
     def handle_flyer_attachment
