@@ -14,30 +14,41 @@ class API::V1::EventsController < ApplicationController
             render json: { events: events }, status: :ok
           else
             events = Event.all
-            render json: { events: events }, status: :ok
-          end
+            render json: events.map { |event| 
+            event.as_json.merge({
+            flyer_url: event.flyer.attached? ? Rails.application.routes.url_helpers.rails_blob_url(event.flyer, only_path: true) : nil,
+            event_picture_urls: event.event_picture_urls 
+            }) 
+        }
+        end
     end
 
     #GET /api/v1/events/:id
     def show
-        event_json = @event.as_json
-        if @event.flyer.attached?
-          event_json.merge!(flyer_url: rails_blob_url(@event.flyer, only_path: false))
-        end
-      
-        if @event.event_pictures.attached?
-          event_json.merge!(
-            event_pictures: @event.event_pictures.map do |pic|
-              {
-                url: rails_blob_url(pic, only_path: false),  
-                thumbnail_url: rails_blob_url(pic.variant(resize_to_limit: [200, nil]).processed, only_path: false)  
-              }
+        # Asegúrate de que @event esté definido y no sea nil
+        if @event
+            event_json = @event.as_json
+    
+            if @event.flyer.attached?
+                event_json.merge!(flyer_url: rails_blob_url(@event.flyer, only_path: false))
             end
-          )
+    
+            if @event.event_pictures.attached?
+                event_json.merge!(
+                    event_pictures: @event.event_pictures.map do |pic|
+                        {
+                            url: rails_blob_url(pic, only_path: false),
+                            thumbnail_url: rails_blob_url(pic.variant(resize_to_limit: [200, nil]).processed, only_path: false)
+                        }
+                    end
+                )
+            end
+    
+            render json: { event: event_json }, status: :ok
+        else
+            render json: { error: "Evento no encontrado" }, status: :not_found
         end
-      
-        render json: { event: event_json }, status: :ok
-      end
+    end
 
     #POST /api/v1/events
     def create
