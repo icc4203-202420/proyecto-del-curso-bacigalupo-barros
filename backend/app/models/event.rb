@@ -4,9 +4,13 @@ class Event < ApplicationRecord
   has_many :users, through: :attendances, dependent: :destroy
 
   has_one_attached :flyer
+  has_many_attached :event_pictures
 
   validates :flyer, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
                                     message: 'must be a valid flyer format' },
+                    size: { less_than: 5.megabytes }
+  validates :event_pictures, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
+                                    message: 'must be a valid image format' },
                     size: { less_than: 5.megabytes }
 
   def thumbnail

@@ -7,16 +7,17 @@ import Attendances from './Attendances';
 import AddAttendance from "./AddAttendance";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import CloseIcon from '@mui/icons-material/Close';
 
 const Events = () => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return format(date, 'dd MMMM yyyy', { locale: es });
-    }; //pq sin esto se ve horrible
+    };
+    
     const [events, setEvents] = useState(null);
     const { bar_id } = useParams();
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     useEffect(() => {
         const fetchEvents = async () => { 
@@ -25,7 +26,11 @@ const Events = () => {
                 const response = await axios.get(event_url); 
                 const data = await response.data;
 
-                if (data.events) { 
+                console.log(data);
+
+                if (data.event) { 
+                    setEvents([data.event]);
+                } else if (data.events) { 
                     setEvents(data.events);
                 }
             } catch (error) {
@@ -33,7 +38,7 @@ const Events = () => {
             }
         };
         fetchEvents();
-    }, [bar_id])
+    }, [bar_id]);
 
     const handleCheckIn = (attendance) => {
         console.log('Checked in');
@@ -42,6 +47,11 @@ const Events = () => {
 
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleEventSelect = (event) => {
+        console.log("Evento seleccionado:", event);
+        setSelectedEvent(event); 
     };
 
     return (
@@ -55,36 +65,40 @@ const Events = () => {
                 }}>
                 Eventos del bar
             </Typography>
-            {events ? (
-                <Grid item xs={3}>
-                    {events.map((event) => (
-                        <Card key={event.id} elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
-                            <Typography variant="h5" 
-                                sx={{ 
-                                    marginBottom: 1, 
-                                    color: '#000000',
-                                    textAlign: 'center', 
-                                    fontFamily: 'Times New Roman, serif'
-                                }}>
-                                Nombre: {event.name}
-                            </Typography>
-                            <Typography>
-                                Description: {event.description}
-                            </Typography>
-                            <Typography>
-                                Fecha: {formatDate(event.date)}
-                            </Typography>
-                            <Typography>
-                                Hora Inicio: {event.start_date}
-                            </Typography>
-                            <Typography>
-                                Hora Fin: {event.end_date}
-                            </Typography>
-                            <Typography>
-                                ID del Bar: {event.bar_id}
-                            </Typography>
 
-                            <AddAttendance bar_id={bar_id} event_id={event.id} onCheckIn={handleCheckIn} />
+            {selectedEvent ? (
+                <EventGallery event={selectedEvent} />
+            ) : events ? (
+                <Grid container spacing={2}>
+                    {events.map((event) => (
+                        <Grid item xs={12} sm={6} md={4} key={event.id}>
+                            <Card elevation={3} style={{ padding: '16px', textAlign: 'center' }}>
+                                <Typography variant="h5" 
+                                    sx={{ 
+                                        marginBottom: 1, 
+                                        color: '#000000',
+                                        textAlign: 'center', 
+                                        fontFamily: 'Times New Roman, serif'
+                                    }}>
+                                    Nombre: {event.name}
+                                </Typography>
+                                <Typography>
+                                    Descripción: {event.description}
+                                </Typography>
+                                <Typography>
+                                    Fecha: {formatDate(event.date)}
+                                </Typography>
+                                <Typography>
+                                    Hora Inicio: {event.start_date}
+                                </Typography>
+                                <Typography>
+                                    Hora Fin: {event.end_date}
+                                </Typography>
+                                <Typography>
+                                    ID del Bar: {event.bar_id}
+                                </Typography>
+
+                                <AddAttendance bar_id={bar_id} event_id={event.id} onCheckIn={handleCheckIn} />
                                 <Attendances event_id={event.id} />
                                 <Button
                                     component={Link}
@@ -104,14 +118,16 @@ const Events = () => {
                                     <ArrowBack sx={{ mr: 1 }} />
                                     Vuelta a Bars
                                 </Button>
-                        </Card>
+                            </Card>
+                        </Grid>
                     ))}
                 </Grid>
-                ) : (
+            ) : (
                 <Grid container justifyContent="center">
                     <CircularProgress />
                 </Grid>
             )}
+
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
@@ -123,15 +139,8 @@ const Events = () => {
                     </Button>
                 }
                 anchorOrigin={{
-                    vertical: 'center', 
+                    vertical: 'bottom', 
                     horizontal: 'center', 
-                }}
-                style={{
-                    position: 'fixed',
-                    bottom: 'auto',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
                 }}
             />
         </Container>
