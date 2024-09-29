@@ -117,7 +117,7 @@ const Events = () => {
                                             marginTop: '16px'
                                         }}
                                         onClick={() => {
-                                            console.log("Botón Ver Imágenes clickeado para:", event); // Verifica que event no sea undefined
+                                            console.log("Botón Ver Imágenes clickeado para:", event);
                                             handleEventSelect(event);
                                             handleViewImages(event);
                                         }}

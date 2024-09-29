@@ -27,7 +27,10 @@ Rails.application.routes.draw do
           resources :attendances, only: [:create, :index]
         end
       end
-      resources :events
+      resources :events do
+        post 'upload_picture', on: :member
+        resources :attendances, only: [:create, :index]
+      end
       resources :reviews, only: [:create, :update, :destroy]
       resources :beers do
         resources :reviews
