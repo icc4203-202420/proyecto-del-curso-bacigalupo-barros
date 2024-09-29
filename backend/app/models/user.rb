@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :attendances
   has_many :events, through: :attendances
   has_many :friendships
+  has_many :event_pictures
 
   accepts_nested_attributes_for :reviews, allow_destroy: true
   accepts_nested_attributes_for :address, allow_destroy: true
