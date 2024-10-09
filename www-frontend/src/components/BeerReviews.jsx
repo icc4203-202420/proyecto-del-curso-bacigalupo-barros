@@ -1,46 +1,182 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
-import { Typography } from '@mui/material';
+import { Card, Typography, Container, CardContent, Divider, Button, CircularProgress, Tabs, Tab, Box } from '@mui/material';
 import AddReview from './AddReview';
+import { useParams, Link } from 'react-router-dom';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ArrowBack } from '@mui/icons-material';
 
-const BeerReviews = ({ beerId }) => {
-    const [reviews, setReviews] = useState([]);
+const initialState = {
+    reviews: [],
+    loading: true,
+    error: null,
+};
+
+const ACTIONS = {
+    FETCH_REVIEWS_SUCCESS: 'FETCH_REVIEWS_SUCCESS',
+    FETCH_ERROR: 'FETCH_ERROR',
+    ADD_REVIEW: 'ADD_REVIEW',
+};
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case ACTIONS.FETCH_REVIEWS_SUCCESS:
+            return {
+                ...state,
+                reviews: action.payload,
+                loading: false,
+            };
+        case ACTIONS.FETCH_ERROR:
+            return {
+                ...state,
+                error: action.payload,
+                loading: false,
+            };
+        case ACTIONS.ADD_REVIEW:
+            return {
+                ...state,
+                reviews: [...state.reviews, action.payload],
+            };
+        default:
+            return state;
+    }
+};
+
+const BeerReviews = () => {
+    const { id } = useParams();
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const [tabIndex, setTabIndex] = useState(0); // Estado para manejar la pestaña activa
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:3001/api/v1/beers/${beerId}/reviews`);
-                setReviews(response.data.reviews);
+                const reviewsResponse = await axios.get(`http://127.0.0.1:3001/api/v1/beers/${id}/reviews`);
+                dispatch({
+                    type: ACTIONS.FETCH_REVIEWS_SUCCESS,
+                    payload: reviewsResponse.data.reviews,
+                });
             } catch (error) {
-                console.error("Error fetching reviews:", error);
+                dispatch({
+                    type: ACTIONS.FETCH_ERROR,
+                    payload: "Error fetching reviews",
+                });
             }
         };
+
         fetchReviews();
-    }, [beerId]);
+    }, [id]);
 
     const handleNewReview = (newReview) => {
-        setReviews([...reviews, newReview]);
+        dispatch({ type: ACTIONS.ADD_REVIEW, payload: newReview });
+        setTabIndex(0); 
     };
 
+    const handleTabChange = (event, newValue) => {
+        setTabIndex(newValue);
+    };
+
+    if (state.loading) {
+        return (
+            <Container>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (state.error) {
+        return (
+            <Container>
+                <Typography variant="h6" color="error">
+                    {state.error}
+                </Typography>
+            </Container>
+        );
+    }
+
     return (
-        <div style={{ marginTop: '20px' }}>
-            <Typography variant="h5">Reviews</Typography>
-            {reviews.length > 0 ? (
-                reviews.map((review) => (
-                    <div key={review.id}>
-                        <Typography variant="body2">
-                            <strong>Rating:</strong> {review.rating} / 5
+        <Container>
+            <Card sx={{ marginTop: 2, padding: 2 }}>
+                <Tabs value={tabIndex} onChange={handleTabChange} centered>
+                    <Tab label="Reviews"/>
+                    
+                    <Tab label="Add Review" />
+                </Tabs>
+
+                {tabIndex === 0 && (
+                    <CardContent>
+                        <Typography
+                            variant="h5"
+                            sx={{ color: '#000000', fontFamily: 'Times New Roman, serif', marginBottom: 2 }}
+                        >
+                            Reviews
                         </Typography>
-                        <Typography variant="body2">
-                            {review.text}
-                        </Typography>
-                    </div>
-                ))
-            ) : (
-                <Typography variant="body1">No reviews yet.</Typography>
-            )}
-            <AddReview beerId={beerId} onNewReview={handleNewReview} />
-        </div>
+
+                        {state.reviews.length > 0 ? (
+                            state.reviews.map((review, index) => (
+                                review && review.rating !== undefined ? (
+                                    <div key={index} style={{ marginBottom: 2 }}>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                                        >
+                                             <strong>{review.user.handle} | Rating:</strong> {review.rating} / 5
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                                        >
+                                            {review.text}
+                                        </Typography>
+                                        <Divider sx={{ marginY: 1 }} />
+                                    </div>
+                                ) : (
+                                    <Typography
+                                        key={index}
+                                        variant="body2"
+                                        color="textSecondary"
+                                        sx={{ fontFamily: 'Times New Roman, serif', marginBottom: 2 }}
+                                    >
+                                        Review data is not available (Recargar la página, solo así nos sirvió).
+                                    </Typography>
+                                )
+                            ))
+                        ) : (
+                            <Typography
+                                variant="body1"
+                                sx={{ color: '#000000', fontFamily: 'Times New Roman, serif' }}
+                            >
+                                No reviews yet.
+                            </Typography>
+                        )}
+                    </CardContent>
+                )}
+
+                {tabIndex === 1 && (
+                    <CardContent>
+                        <AddReview id={id} onNewReview={handleNewReview} />
+                    </CardContent>
+                )}
+            </Card>
+
+            <Button
+                component={Link}
+                to="/beers"
+                variant="contained"
+                sx={{ 
+                    bgcolor: '#A020F0', 
+                    position: 'fixed', 
+                    top: 65, 
+                    left: 5, 
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'white'
+                }}
+                >
+                <ArrowBack sx={{ mr: 1 }} />
+                Vuelta a Beers
+            </Button>
+        </Container>
     );
 };
 
