@@ -7,6 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import BeerIcon from '@mui/icons-material/SportsBar';
 import SearchIcon from '@mui/icons-material/Search';
 import LocalBarIcon from '@mui/icons-material/Storefront';
+import MapIcon from '@mui/icons-material/Map';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Beers from './components/Beer';
@@ -18,6 +19,8 @@ import LogIn from './components/LogIn';
 import LogOut from './components/LogOut';
 import BeerDetails from './components/BeerDetails';
 import BeerReviews from './components/BeerReviews';
+import Map from './components/Map'
+import EventGallery from './components/EventGallery';
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -89,6 +92,12 @@ function App() {
                 </ListItemIcon>
                 <ListItemText primary="Bars" />
               </ListItem>
+              <ListItem button component={Link} to="/map" onClick={toggleDrawer}>
+                <ListItemIcon>
+                  <MapIcon />
+                </ListItemIcon>
+                <ListItemText primary="Map" />
+              </ListItem>
               <ListItem button component={Link} to="/usersearch" onClick={toggleDrawer}>
                 <ListItemIcon>
                   <SearchIcon />
@@ -131,6 +140,8 @@ function App() {
         <Route path="/bars/:bar_id/events" element={isLoggedIn ? <Events /> : <RedirectToLogin />} />
         <Route path="/beers/:id" element={isLoggedIn ? <BeerDetails /> : <RedirectToLogin />} />
         <Route path="/beers/:id/reviews" element={isLoggedIn ? <BeerReviews /> : <RedirectToLogin />} />
+        <Route path="/map" element={isLoggedIn ? <Map /> : <RedirectToLogin />}/>
+        <Route path="/events/:id" element={<EventGallery />} />
       </Routes>
     </>
   );
@@ -155,6 +166,10 @@ function RedirectToLogin() {
 }
 
 function Home() {
+  const [nearbyBars, setNearbyBars] = useState([]);
+  const handleNearbyBarsUpdate = (bars) => {
+    setNearbyBars(bars);
+  };
   return (
     <Card sx={{ margin: 2, maxWidth: 600, mx: "auto" }}>
       <CardContent sx={{

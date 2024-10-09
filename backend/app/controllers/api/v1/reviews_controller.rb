@@ -11,7 +11,7 @@ class API::V1::ReviewsController < ApplicationController
       user_review = @reviews.find_by(user: current_user)
   
       render json: {
-        reviews: @reviews.as_json(include: { user: { only: [:id, :first_name, :last_name] } }),
+        reviews: @reviews.as_json(include: { user: { only: [:id, :first_name, :last_name, :handle] } }),
         user_review: user_review,
         average_rating: @beer.avg_rating
       }
