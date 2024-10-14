@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const LogInScreen = ({ onLogin = () => console.log('test') }) => {
+const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -22,7 +23,7 @@ const LogInScreen = ({ onLogin = () => console.log('test') }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.94:3000/api/v1/login', {
+      const response = await fetch('http://192.168.100.116:3000/api/v1/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -36,6 +37,10 @@ const LogInScreen = ({ onLogin = () => console.log('test') }) => {
       if (response.ok) {
         const token = data.status.token; 
         if (token) {
+          // Guardar el token en AsyncStorage
+          await AsyncStorage.setItem('authToken', JSON.stringify(token));
+
+          // Llamar a la función de login y mostrar éxito
           onLogin(token); 
           setSuccessMessage('Login successful!');
           setErrorMessage('');
@@ -53,6 +58,7 @@ const LogInScreen = ({ onLogin = () => console.log('test') }) => {
 
     } catch (error) {
       console.error('Fetch error:', error); 
+      Alert.alert('Error', 'Something went wrong. Please try again.');
     }
   };
 
