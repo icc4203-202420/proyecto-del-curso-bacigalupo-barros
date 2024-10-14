@@ -15,7 +15,7 @@ const BeerDetailsScreen = () => {
     useEffect(() => {
         const fetchBeerDetails = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:3001/api/v1/beers/${id}`);
+                const response = await fetch(`http://192.168.1.94:3000/api/v1/beers/${id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -54,27 +54,27 @@ const BeerDetailsScreen = () => {
             {beer ? (
                 <>
                     <Text style={styles.title}>Beer Details</Text>
-                    <Text style={styles.detail}><strong>Name:</strong> {beer.name}</Text>
-                    <Text style={styles.detail}><strong>Style:</strong> {beer.style}</Text>
-                    <Text style={styles.detail}><strong>Hop:</strong> {beer.hop}</Text>
-                    <Text style={styles.detail}><strong>Yeast:</strong> {beer.yeast}</Text>
-                    <Text style={styles.detail}><strong>Malts:</strong> {beer.malts}</Text>
-                    <Text style={styles.detail}><strong>IBU:</strong> {beer.ibu}</Text>
-                    <Text style={styles.detail}><strong>Alcohol Level:</strong> {beer.alcohol}</Text>
-                    <Text style={styles.detail}><strong>BLG:</strong> {beer.blg}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Name:</Text> {beer.name}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Style:</Text> {beer.style}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Hop:</Text> {beer.hop}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Yeast:</Text> {beer.yeast}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Malts:</Text> {beer.malts}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>IBU:</Text> {beer.ibu}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>Alcohol Level:</Text> {beer.alcohol}</Text>
+                    <Text style={styles.detail}><Text style={styles.bold}>BLG:</Text> {beer.blg}</Text>
                     <Text style={styles.detail}>
-                        <strong>Average Rating:</strong> {beer.avg_rating ? beer.avg_rating.toFixed(2) : 'No ratings yet'}
+                        <Text style={styles.bold}>Average Rating:</Text> {beer.avg_rating ? beer.avg_rating.toFixed(2) : 'No ratings yet'}
                     </Text>
 
                     {brewery && (
                         <Text style={styles.detail}>
-                            <strong>Brewery:</strong> {brewery.name} (Established: {brewery.estdate})
+                            <Text style={styles.bold}>Brewery:</Text> {brewery.name} (Established: {brewery.estdate})
                         </Text>
                     )}
 
                     {bars.length > 0 ? (
                         <View>
-                            <Text style={styles.detail}><strong>Bars Serving This Beer:</strong></Text>
+                            <Text style={styles.detail}><Text style={styles.bold}>Bars Serving This Beer:</Text></Text>
                             {bars.map(bar => (
                                 <Text key={bar.id} style={styles.detail}>
                                     - {bar.name} (Location: {bar.latitude}, {bar.longitude})
@@ -124,6 +124,9 @@ const styles = StyleSheet.create({
     detail: {
         fontSize: 16,
         marginBottom: 8,
+    },
+    bold: {
+        fontWeight: 'bold',
     },
 });
 
