@@ -22,7 +22,7 @@ const LogInScreen = ({ onLogin = () => console.log('test') }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/api/v1/login', {
+      const response = await fetch('http://192.168.1.94:3000/api/v1/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
