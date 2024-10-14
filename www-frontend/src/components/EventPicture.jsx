@@ -1,23 +1,30 @@
 import React from 'react';
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
+import TagUsers from './TagUsers';
 
-const EventPicture = ({ imageUrl, title }) => {
+const EventPicture = ({ imageUrl, pictureId }) => {
+    const handleTagUser = (photoTag) => {
+        console.log('User tagged:', photoTag);
+    };
+
+    console.log("Picture ID:", pictureId);
+
     return (
-        <Card sx={{ marginBottom: 2 }}>
+        <Card sx={{ maxWidth: 345, m: 2 }}>
             <CardMedia
                 component="img"
-                alt={title || "Event Picture"}
                 height="140"
                 image={imageUrl}
-                sx={{ objectFit: 'cover' }}
+                alt="Event picture"
             />
-            {title && (
-                <CardContent>
-                    <Typography variant="caption" color="textSecondary">
-                        {title}
-                    </Typography>
-                </CardContent>
-            )}
+            <CardContent>
+                {pictureId && (
+                    <TagUsers eventPictureId={pictureId} onTagUser={handleTagUser} />
+                )}
+                <Typography variant="body2" color="text.secondary">
+                    Picture ID: {pictureId}  
+                </Typography>
+            </CardContent>
         </Card>
     );
 };

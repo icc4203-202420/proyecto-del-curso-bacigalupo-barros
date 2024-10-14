@@ -7,7 +7,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 const BeerReviews = () => {
     const route = useRoute();
     const navigation = useNavigation();
-    const { id } = route.params; // Obtener el id desde los parámetros de la ruta
+    const { id } = route.params; 
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,7 +15,6 @@ const BeerReviews = () => {
 
     useEffect(() => {
         const fetchReviews = async () => {
-            // Comprobar si el id es válido
             if (!id) {
                 setError("No beer ID provided.");
                 setLoading(false);
@@ -23,7 +22,7 @@ const BeerReviews = () => {
             }
 
             try {
-                const response = await axios.get(`http://192.168.1.94:3000/api/v1/beers/${id}/reviews`);
+                const response = await axios.get(`http://192.168.100.116:3000/api/v1/beers/${id}/reviews`);
                 setReviews(response.data.reviews);
             } catch (error) {
                 setError("Error fetching reviews");
@@ -38,7 +37,7 @@ const BeerReviews = () => {
 
     const handleNewReview = (newReview) => {
         setReviews((prevReviews) => [...prevReviews, newReview]);
-        setTabIndex(0); 
+        setTabIndex(0);
     };
 
     if (loading) {
@@ -59,7 +58,6 @@ const BeerReviews = () => {
 
     return (
         <View style={styles.container}>
-
             {tabIndex === 0 ? (
                 <ScrollView>
                     <Text style={styles.title}>Reviews</Text>

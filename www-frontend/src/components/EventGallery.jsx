@@ -13,29 +13,29 @@ const EventGallery = () => {
 
     const [event, setEvent] = useState(initialEvent);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!event) {
-            const fetchEvent = async () => {
-                setLoading(true); 
-                try {
-                    const eventId = location.state?.event?.id;
-                    if (eventId) {
-                        const response = await axios.get(`http://127.0.0.1:3001/api/v1/events/${eventId}`);
-                        setEvent(response.data.event);
-                    }
-                } catch (error) {
-                    setError(error.response?.data?.message || 'No se pudo obtener el evento');
-                } finally {
-                    setLoading(false); 
+        const fetchEvent = async () => {
+            setLoading(true);
+            try {
+                const eventId = initialEvent?.id || location.state?.event?.id;
+                if (eventId) {
+                    const response = await axios.get(`http://127.0.0.1:3001/api/v1/events/${eventId}`);
+                    setEvent(response.data.event);
                 }
-            };
+            } catch (error) {
+                setError(error.response?.data?.message || 'No se pudo obtener el evento');
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        if (!event) {
             fetchEvent();
         } else {
-            setLoading(false); 
+            setLoading(false);
         }
     }, [event, location.state]);
 
@@ -78,11 +78,11 @@ const EventGallery = () => {
     };
 
     if (loading) {
-        return <CircularProgress />; 
+        return <CircularProgress />;
     }
 
     if (error) {
-        return <Typography color="error">{error}</Typography>; 
+        return <Typography color="error">{error}</Typography>;
     }
 
     if (!event) {
@@ -99,7 +99,7 @@ const EventGallery = () => {
                     Descripción: {event.description}
                 </Typography>
                 <Typography variant="h6" sx={{ textAlign: 'center', fontFamily: 'Times New Roman, serif' }}>
-                    Flyer: 
+                    Flyer:
                     <img src={event.flyer_url} alt="Flyer" style={{ maxWidth: '100%', margin: '10px 0' }} />
                 </Typography>
 
@@ -116,8 +116,12 @@ const EventGallery = () => {
                     marginBottom: '10px'
                 }}>
                     {event.event_pictures && event.event_pictures.length > 0 ? (
-                        event.event_pictures.map((picture, index) => (
-                            <EventPicture key={index} imageUrl={picture.url} />
+                        event.event_pictures.map((picture) => (
+                            <EventPicture 
+                                key={picture.id} 
+                                imageUrl={picture.url} 
+                                pictureId={picture.id}
+                            />
                         ))
                     ) : (
                         <Typography sx={{ textAlign: 'center', fontFamily: 'Times New Roman, serif' }}>
