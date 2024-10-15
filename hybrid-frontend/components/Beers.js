@@ -12,7 +12,7 @@ const Beers = () => {
     useEffect(() => {
         const fetchBeers = async () => {
             try {
-                const response = await fetch('http://192.168.100.116:3000/api/v1/beers');
+                const response = await fetch('http://10.33.1.198:3000/api/v1/beers');
                 const data = await response.json();
                 if (data.beers) {
                     setBeers(data.beers);

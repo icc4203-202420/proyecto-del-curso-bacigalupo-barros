@@ -23,7 +23,7 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.100.116:3000/api/v1/login', {
+      const response = await fetch('http://10.33.1.198:3000/api/v1/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -37,10 +37,7 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
       if (response.ok) {
         const token = data.status.token; 
         if (token) {
-          // Guardar el token en AsyncStorage
           await AsyncStorage.setItem('authToken', JSON.stringify(token));
-
-          // Llamar a la función de login y mostrar éxito
           onLogin(token); 
           setSuccessMessage('Login successful!');
           setErrorMessage('');
