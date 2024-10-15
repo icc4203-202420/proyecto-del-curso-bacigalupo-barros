@@ -39,7 +39,7 @@ const SignUpScreen = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.100.116:3000/api/v1/signup', {
+      const response = await fetch('http://10.33.1.198:3000/api/v1/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

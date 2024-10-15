@@ -22,7 +22,7 @@ const BeerReviews = () => {
             }
 
             try {
-                const response = await axios.get(`http://192.168.100.116:3000/api/v1/beers/${id}/reviews`);
+                const response = await axios.get(`http://10.33.1.198:3000/api/v1/beers/${id}/reviews`);
                 setReviews(response.data.reviews);
             } catch (error) {
                 setError("Error fetching reviews");

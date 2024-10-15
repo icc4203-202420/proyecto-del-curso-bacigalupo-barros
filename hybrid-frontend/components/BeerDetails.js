@@ -15,7 +15,7 @@ const BeerDetailsScreen = () => {
     useEffect(() => {
         const fetchBeerDetails = async () => {
             try {
-                const response = await fetch(`http://192.168.100.116:3000/api/v1/beers/${id}`);
+                const response = await fetch(`http://10.33.1.198:3000/api/v1/beers/${id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
