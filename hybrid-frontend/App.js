@@ -9,11 +9,10 @@ import Beers from './components/Beers';
 import BeerDetails from './components/BeerDetails';
 import BeerReviews from './components/BeerReviews';
 
-// Crear un stack para la navegación apilada (para detalles de cervezas)
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();  // Crear Tab Navigator
+const Tab = createBottomTabNavigator();  
 
-// Crear el componente de Tab Navigation
+// componente de Tab Navigation
 function TabNavigator() {
   return (
     <Tab.Navigator
