@@ -34,6 +34,12 @@ if Rails.env.development?
     bar.beers << Beer.all.sample(rand(1..3))
   end
 
+  # Agregar bares en ubicaciones específicas en Chile
+  # Las Condes, Providencia y Vitacura
+  FactoryBot.create(:bar, name: 'Bar en Las Condes', latitude: -33.4072, longitude: -70.6051, address: FactoryBot.create(:address, city: 'Las Condes', line1: 'Av. Apoquindo 3000', country: countries.find { |c| c.name == 'Chile' }))
+  FactoryBot.create(:bar, name: 'Bar en Providencia', latitude: -33.4280, longitude: -70.6170, address: FactoryBot.create(:address, city: 'Providencia', line1: 'Av. Providencia 1234', country: countries.find { |c| c.name == 'Chile' }))
+  FactoryBot.create(:bar, name: 'Bar en Vitacura', latitude: -33.4074, longitude: -70.6010, address: FactoryBot.create(:address, city: 'Vitacura', line1: 'Av. Vitacura 5000', country: countries.find { |c| c.name == 'Chile' }))
+
   # Crear eventos asociados a los bares
   events = bars.map do |bar|
     FactoryBot.create(:event, bar: bar)
@@ -50,5 +56,4 @@ if Rails.env.development?
       FactoryBot.create(:attendance, user: user, event: event, checked_in: [true, false].sample)
     end
   end
-
 end
