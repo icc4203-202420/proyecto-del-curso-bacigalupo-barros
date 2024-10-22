@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
-
+import { API_URL } from '../config';
 const SignUpScreen = () => {
   const [formData, setFormData] = useState({
     first_name: '',
@@ -39,7 +39,7 @@ const SignUpScreen = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.94:3000/api/v1/signup', {
+      const response = await fetch(`${API_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

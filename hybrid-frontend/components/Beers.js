@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { API_URL } from '../config';
 
 const Beers = () => {
     const [beers, setBeers] = useState([]);
@@ -12,7 +13,7 @@ const Beers = () => {
     useEffect(() => {
         const fetchBeers = async () => {
             try {
-                const response = await fetch('http://192.168.1.94:3000/api/v1/beers');
+                const response = await fetch(`${API_URL}/beers`);
                 const data = await response.json();
                 if (data.beers) {
                     setBeers(data.beers);

@@ -3,6 +3,7 @@ import { View, Button, TextInput, Text, StyleSheet, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { API_URL } from '../config';
 
 const AddReview = ({ id, onNewReview }) => {
     const [rating, setRating] = useState(3);
@@ -33,7 +34,7 @@ const AddReview = ({ id, onNewReview }) => {
                 return;
             }
 
-            const response = await fetch(`http://192.168.1.94:3000/api/v1/beers/${id}/reviews`, {
+            const response = await fetch(`${API_URL}/beers/${id}/reviews`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

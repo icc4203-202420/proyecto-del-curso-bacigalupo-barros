@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '../config';
 
 const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.94:3000/api/v1/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -40,6 +41,7 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
           await AsyncStorage.setItem('authToken', JSON.stringify(token));
           onLogin(token); 
           setSuccessMessage('Login successful!');
+          console.log(token)
           setErrorMessage('');
           Alert.alert('Success', 'Login successful!');
           navigation.navigate('Home'); 
