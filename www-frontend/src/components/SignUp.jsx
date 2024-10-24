@@ -10,15 +10,36 @@ const SignUp = () => {
     password: '',
     password_confirmation: '',
     handle: '',
+    address_attributes: {
+      line1: '',  
+      line2: '',
+      city: '',
+      country_id: '' 
+    } 
   });
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      address_attributes: {
+        ...prevData.address_attributes,
+        [name]: value
+      }
+    }));
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -105,6 +126,33 @@ const SignUp = () => {
         onChange={handleChange}
         required
       />
+
+      <TextField
+        label="Address Line 1"
+        name="line1"
+        variant="outlined"
+        onChange={handleAddressChange}
+      />
+      <TextField
+        label="Address Line 2"
+        name="line2"
+        variant="outlined"
+        onChange={handleAddressChange}
+      />
+      <TextField
+        label="City"
+        name="city"
+        variant="outlined"
+        onChange={handleAddressChange}
+      />
+      <TextField
+        label="Country ID (optional)"
+        name="country_id"
+        variant="outlined"
+        type="number"  // Puedes cambiar el tipo si es necesario
+        onChange={handleChange}
+        placeholder="Enter Country ID (if applicable)"
+        />
       <Button type="submit" variant="contained" color="primary" size="large">
         Sign Up
       </Button>

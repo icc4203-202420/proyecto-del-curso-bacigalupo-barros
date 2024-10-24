@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, CircularProgress, Card, CardContent, Button } from '@mui/material';
 import BeerReviews from './BeerReviews';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ArrowBack } from '@mui/icons-material';
+
 
 const BeerDetails = () => {
     const { id } = useParams();
@@ -41,21 +44,21 @@ const BeerDetails = () => {
                 <>
                     <Card>
                         <CardContent>
-                            <Typography variant="h3" gutterBottom>Beer Details</Typography>
-                            <Typography variant="body1"><strong>Name:</strong> {beer.name}</Typography>
-                            <Typography variant="body1"><strong>Style:</strong> {beer.style}</Typography>
-                            <Typography variant="body1"><strong>Hop:</strong> {beer.hop}</Typography>
-                            <Typography variant="body1"><strong>Yeast:</strong> {beer.yeast}</Typography>
-                            <Typography variant="body1"><strong>Malts:</strong> {beer.malts}</Typography>
-                            <Typography variant="body1"><strong>IBU:</strong> {beer.ibu}</Typography>
-                            <Typography variant="body1"><strong>Alcohol Level:</strong> {beer.alcohol}</Typography>
-                            <Typography variant="body1"><strong>BLG:</strong> {beer.blg}</Typography>
-                            <Typography variant="body1">
+                            <Typography variant="h3" gutterBottom sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>Beer Details</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Name:</strong> {beer.name}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Style:</strong> {beer.style}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Hop:</strong> {beer.hop}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Yeast:</strong> {beer.yeast}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Malts:</strong> {beer.malts}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>IBU:</strong> {beer.ibu}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>Alcohol Level:</strong> {beer.alcohol}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}><strong>BLG:</strong> {beer.blg}</Typography>
+                            <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>
                                 <strong>Average Rating:</strong> {beer.avg_rating ? beer.avg_rating.toFixed(2) : 'No ratings yet'}
                             </Typography>
 
                             {brewery && (
-                                <Typography variant="body1">
+                                <Typography variant="body1" sx={{color: '#000000', fontFamily: 'Times New Roman, serif'}}>
                                     <strong>Brewery:</strong> {brewery.name} (Established: {brewery.estdate})
                                 </Typography>
                             )}
@@ -72,21 +75,38 @@ const BeerDetails = () => {
                             ) : (
                                 <Typography variant="body1">No bars serving this beer.</Typography>
                             )}
-
                             <Button
                                 component={Link}
-                                to="/beers"
+                                to={`/beers/${id}/reviews`}
                                 variant="contained"
-                                color="primary"
+                                sx={{ bgcolor: '#A020F0' }}
                                 style={{ marginTop: '16px' }}
                             >
-                                Back to Beers
+                                <StarBorderIcon/> Reviews
                             </Button>
+
                         </CardContent>
                     </Card>
-                    
-                    {/* Component for displaying beer reviews */}
-                    <BeerReviews beerId={id} />
+                    <Button
+                        component={Link}
+                        to="/beers"
+                        variant="contained"
+                        sx={{ 
+                            bgcolor: '#A020F0', 
+                            position: 'fixed', 
+                            top: 65, 
+                            left: 5, 
+                            zIndex: 9999,
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'white'
+                        }}
+                        >
+                        <ArrowBack sx={{ mr: 1 }} />
+                        Vuelta a Beers
+                    </Button>
+
+                    {/*<BeerReviews beerId={id} />*/}
                 </>
             ) : (
                 <Typography variant="h6">No details available for this beer.</Typography>

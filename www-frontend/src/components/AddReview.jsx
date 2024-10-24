@@ -2,27 +2,42 @@ import React, { useState } from 'react';
 import { Slider, Button, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 
-const AddReview = ({ beerId, onNewReview }) => {
+const AddReview = ({ id, onNewReview }) => {
     const [rating, setRating] = useState(3);
     const [reviewText, setReviewText] = useState('');
     const [error, setError] = useState('');
 
     const handleSubmit = async () => {
-        if (reviewText.length < 15) {
-            setError('The review must be at least 15 words long.');
+        if (reviewText.length <= 15) {
+            setError('The review must be at least 15 characters long.');
             return;
         }
 
+        const aux_token = localStorage.getItem('authToken');
+        const token = aux_token;
+        console.log(token);
+
         try {
-            const response = await axios.post(`http://127.0.0.1:3001/api/v1/beers/${beerId}/reviews`, {
-                rating,
-                text: reviewText,
-            });
-            onNewReview(response.data.review);  // Update the reviews list
+            const response = await axios.post(
+                `http://127.0.0.1:3001/api/v1/beers/${id}/reviews`,
+                {
+                    review: {
+                        text: reviewText,
+                        rating: rating,
+                    }
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }         
+                }
+            );
+            onNewReview(response.data.review);
             setReviewText('');
-            setRating(3);  // Reset the form
+            setRating(3);  
         } catch (error) {
             console.error("Error submitting review:", error);
+            setError('Failed to submit review. Please try again.');
         }
     };
 
@@ -52,7 +67,7 @@ const AddReview = ({ beerId, onNewReview }) => {
             <Button
                 onClick={handleSubmit}
                 variant="contained"
-                color="primary"
+                sx={{ bgcolor: '#A020F0' }}
                 style={{ marginTop: '10px' }}
             >
                 Submit Review
