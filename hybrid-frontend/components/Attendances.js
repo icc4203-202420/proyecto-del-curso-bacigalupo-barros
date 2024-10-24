@@ -56,7 +56,7 @@ const Attendances = () => {
                     renderItem={({ item }) => (
                         <View style={styles.card}>
                             <Text style={styles.attendeeName}>{item.first_name} {item.last_name}</Text>
-                            <Text style={styles.attendeeHandle}><strong>Handle:</strong> @{item.handle}</Text>
+                            <Text style={styles.attendeeHandle}>Handle: @{item.handle}</Text>
                             <Text>Checked In: {item.checked_in ? 'Sí' : 'No'}</Text>
                         </View>
                     )}
