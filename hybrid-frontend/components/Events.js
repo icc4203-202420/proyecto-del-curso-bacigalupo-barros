@@ -75,10 +75,10 @@ const Events = () => {
                     renderItem={({ item }) => (
                         <View style={styles.card}>
                             <Text style={styles.eventName}>{item.name}</Text>
-                            <Text><strong>Descripción:</strong> {item.description}</Text>
-                            <Text><strong>Fecha:</strong> {formatDate(item.date)}</Text>
-                            <Text><strong>Hora Inicio:</strong> {item.start_date}</Text>
-                            <Text><strong>Hora Fin:</strong> {item.end_date}</Text>
+                            <Text>Descripción: {item.description}</Text>
+                            <Text>Fecha: {formatDate(item.date)}</Text>
+                            <Text>Hora Inicio: {item.start_date}</Text>
+                            <Text>Hora Fin: {item.end_date}</Text>
 
                             <TouchableOpacity
                                 style={styles.button}

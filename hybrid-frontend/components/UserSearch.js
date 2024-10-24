@@ -74,7 +74,7 @@ const UsersSearch = () => {
                     renderItem={({ item: user }) => (
                         <TouchableOpacity onPress={() => handleCardClick(user.id)} style={{ marginBottom: 15, padding: 15, borderWidth: 1, borderColor: '#ccc', borderRadius: 10 }}>
                             <Text style={{ fontSize: 18, marginBottom: 5 }}>{user.handle}</Text>
-                            <Text><strong>Nombre:</strong> {user.first_name} {user.last_name}</Text>
+                            <Text> Nombre: {user.first_name} {user.last_name}</Text>
                             {userId && user.id !== userId && (
                                 <View style={{ marginTop: 10 }}>
                                     <AddFriend userId={userId} friendId={user.id} onAddFriend={handleAddFriend} />

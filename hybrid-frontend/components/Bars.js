@@ -58,8 +58,8 @@ const Bars = ({ navigation }) => {
                 renderItem={({ item }) => (
                     <TouchableOpacity style={styles.card} onPress={() => handleCardClick(item.id)}>
                         <Text style={styles.barName}>{item.name}</Text>
-                        <Text style={styles.barAddress}><strong>Dirección:</strong> {item.address.line1}</Text>
-                        <Text style={styles.barCity}><strong>Ciudad:</strong> {item.address.city}</Text>
+                        <Text style={styles.barAddress}>Dirección: {item.address.line1}</Text>
+                        <Text style={styles.barCity}>Ciudad: {item.address.city}</Text>
                     </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.list}
