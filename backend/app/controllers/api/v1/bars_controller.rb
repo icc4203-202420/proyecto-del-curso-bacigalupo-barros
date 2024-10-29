@@ -7,9 +7,20 @@ class API::V1::BarsController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   def index
-    @bars = Bar.all
-    render json: { bars: @bars }, status: :ok
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @bars = Bar.joins(:address)
+                 .where("bars.name ILIKE :query OR 
+                         addresses.city ILIKE :query OR 
+                         addresses.line1 ILIKE :query OR 
+                         addresses.line2 ILIKE :query OR 
+                         addresses.country ILIKE :query", query: search_term)
+    else
+      @bars = Bar.all
+    end
+    render json: { bars: @bars.as_json(include: :address) }, status: :ok
   end
+
 
   def show
     if @bar.image.attached?
@@ -50,7 +61,22 @@ class API::V1::BarsController < ApplicationController
     else
       render json: @bar.errors, status: :unprocessable_entity
     end
-  end  
+  end 
+  
+  def search
+    country = params[:country]
+    city = params[:city]
+    street = params[:street]
+    number = params[:number]
+
+    @bars = Bar.all
+    @bars = @bars.joins(:address).where('addresses.country ILIKE ?', "%#{country}%") if country.present?
+    @bars = @bars.joins(:address).where('addresses.city ILIKE ?', "%#{city}%") if city.present?
+    @bars = @bars.joins(:address).where('addresses.street ILIKE ?', "%#{street}%") if street.present?
+    @bars = @bars.joins(:address).where('addresses.number ILIKE ?', "%#{number}%") if number.present?
+
+    render json: { bars: @bars }
+  end
 
   private
 
