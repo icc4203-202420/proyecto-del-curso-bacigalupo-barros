@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; // Importa SecureStore
 import { API_URL } from '../config';
 
 const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
@@ -14,6 +14,18 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
   const [successMessage, setSuccessMessage] = useState('');
 
   const navigation = useNavigation(); 
+
+  useEffect(() => {
+    // Verifica si ya hay un token almacenado en SecureStore
+    const checkToken = async () => {
+      const token = await SecureStore.getItemAsync('authToken');
+      if (token) {
+        onLogin(token);
+        navigation.navigate('Home'); // Redirige al usuario a la página de inicio
+      }
+    };
+    checkToken();
+  }, []);
 
   const handleChange = (name, value) => {
     setFormData(prevData => ({
@@ -38,10 +50,10 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
       if (response.ok) {
         const token = data.status.token; 
         if (token) {
-          await AsyncStorage.setItem('authToken', JSON.stringify(token));
+          await SecureStore.setItemAsync('authToken', token); // Almacena el token en SecureStore
           onLogin(token); 
           setSuccessMessage('Login successful!');
-          console.log(token)
+          console.log(token);
           setErrorMessage('');
           Alert.alert('Success', 'Login successful!');
           navigation.navigate('Home'); 

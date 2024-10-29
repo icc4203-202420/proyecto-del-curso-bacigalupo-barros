@@ -22,6 +22,10 @@ const AddAttendance = ({ onCheckIn }) => {
 
     const handleCheckIn = async () => {
         setIsCheckingIn(true);
+        const handleViewImages = (event) => {
+            setSelectedEvent(event);
+            navigation.navigate('EventGallery', { event }); 
+        };
         
         const storedToken = await AsyncStorage.getItem('authToken');
         const token = storedToken ? storedToken.replace(/"/g, '') : null;
