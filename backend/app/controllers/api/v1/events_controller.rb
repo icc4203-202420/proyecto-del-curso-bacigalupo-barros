@@ -92,19 +92,38 @@ end
   end
   
   def upload_picture
-      event = Event.find(params[:id])
-      
-      if params[:image].present?
-        event.event_pictures.attach(params[:image])
-        if event.save
-          render json: { message: 'Imagen subida exitosamente', picture_url: rails_blob_url(event.event_pictures.last) }, status: :ok
-        else
-          render json: { errors: event.errors.full_messages }, status: :unprocessable_entity
+    event = Event.find(params[:id])
+    if event.present?
+        begin
+            # Obtener el contenido de la imagen en base64
+            image_data = params[:image].gsub(/^data:image\/\w+;base64,/, '')
+            image_data = Base64.decode64(image_data)
+
+            # Generar un nombre único para la imagen
+            unique_filename = "#{SecureRandom.uuid}.jpg"
+            
+            # Crear un blob y subir la imagen
+            blob = ActiveStorage::Blob.new(
+                filename: unique_filename,
+                content_type: 'image/jpeg',
+                byte_size: image_data.bytesize,
+                checksum: Digest::MD5.hexdigest(image_data)
+            )
+            blob.upload(StringIO.new(image_data))
+
+            # Adjuntar el blob al evento
+            event.event_pictures.attach(blob)
+
+            render json: { message: 'Imagen subida con éxito', id: event.event_pictures.last.id, url: Rails.application.routes.url_helpers.rails_blob_url(event.event_pictures.last, only_path: true) }, status: :ok
+        rescue => e
+            render json: { error: e.message }, status: :unprocessable_entity
         end
-      else
-        render json: { errors: 'No image provided' }, status: :unprocessable_entity
-      end
+    else
+        render json: { error: 'Evento no encontrado' }, status: :not_found
     end
+end
+
+
     
   private
   

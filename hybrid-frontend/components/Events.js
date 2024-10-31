@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity, Image, Alert } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { API_URL } from '../config';
-import AddAttendance from './AddAttendances';
-import Attendances from './Attendances'; 
-import EventGallery from './EventGallery';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const Events = () => {
-    const route = useRoute(); 
-    const { bar_id } = route.params; 
+    const route = useRoute();
+    const { bar_id } = route.params;
     const navigation = useNavigation();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [imageUploading, setImageUploading] = useState(false);
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -30,10 +28,15 @@ const Events = () => {
                 const data = response.data;
 
                 if (data.events) {
-                    setEvents(data.events);
+                    const eventsWithPictures = data.events.map(event => ({
+                        ...event,
+                        event_pictures: Array.isArray(event.event_pictures) ? event.event_pictures : [] // Inicializa como array si es necesario
+                    }));
+                    setEvents(eventsWithPictures);
                 }
             } catch (error) {
                 console.error("Error fetching events:", error);
+                Alert.alert('Error', 'No se pudieron cargar los eventos.');
             } finally {
                 setLoading(false);
             }
@@ -42,9 +45,24 @@ const Events = () => {
         fetchEvents();
     }, [bar_id]);
 
-    const handleViewImages = (event) => {
-        setSelectedEvent(event);
-        navigation.navigate('EventGallery', { event }); 
+    const handleImageChange = async (event) => {
+        const result = await launchImageLibrary({
+            mediaType: 'photo',
+            includeBase64: true,
+        });
+
+        if (result.didCancel) {
+            console.log('Usuario canceló la selección de imagen');
+            return;
+        } else if (result.error) {
+            Alert.alert('Error', 'Error al seleccionar la imagen');
+            return;
+        } else if (result.assets && result.assets.length > 0) {
+            const selectedFile = result.assets[0];
+            const fileType = selectedFile.type || 'image/jpeg';
+            const base64Image = `data:${fileType};base64,${selectedFile.base64}`;
+            await handleImageUpload(event.id, base64Image);
+        }
     };
 
     const handleCheckIn = (event) => {
@@ -54,6 +72,39 @@ const Events = () => {
 
     const handleViewAttendances = (event) => {
         navigation.navigate('Attendances', { bar_id, event_id: event.id });
+    };
+
+    const handleImageUpload = async (eventId, base64Image) => {
+        setImageUploading(true);
+
+        try {
+            const response = await fetch(`${API_URL}/events/${eventId}/upload_picture`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: base64Image }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log('Imagen subida con éxito:', data.message);
+                // Actualizar el evento localmente con la nueva imagen
+                setEvents((prevEvents) =>
+                    prevEvents.map((evt) =>
+                        evt.id === eventId ? { ...evt, event_pictures: [...evt.event_pictures, { id: data.id, url: data.url }] } : evt
+                    )
+                );
+            } else {
+                console.error('Error al subir la imagen:', data.error);
+                Alert.alert('Error', 'No se pudo subir la imagen.');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            Alert.alert('Error', 'Error en la carga de la imagen.');
+        } finally {
+            setImageUploading(false);
+        }
     };
 
     if (loading) {
@@ -82,9 +133,9 @@ const Events = () => {
 
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => handleViewImages(item)} // Ver imágenes del evento
+                                onPress={() => handleImageChange(item)} // Seleccionar imagen para el evento
                             >
-                                <Text style={styles.buttonText}>Ver Imágenes</Text>
+                                <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Subir Imagen'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -100,6 +151,26 @@ const Events = () => {
                             >
                                 <Text style={styles.buttonText}>Ver Asistencias</Text>
                             </TouchableOpacity>
+
+                            {/* Mostrar imágenes del evento */}
+                            <View style={styles.imageContainer}>
+                                {Array.isArray(item.event_pictures) && item.event_pictures.length > 0 ? (
+                                    item.event_pictures.map((picture) => {
+                                        console.log('Mostrando imagen:', picture.url);
+                                        return (
+                                            <Image 
+                                                key={picture.id} 
+                                                source={{ uri: picture.url }} 
+                                                style={styles.eventImage} 
+                                                resizeMode="contain" 
+                                                onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)} // Manejar errores de carga
+                                            />
+                                        );
+                                    })
+                                ) : (
+                                    <Text>No hay imágenes disponibles.</Text>
+                                )}
+                            </View>
                         </View>
                     )}
                 />
@@ -159,7 +230,21 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    imageContainer: {
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 5,
+        maxHeight: 200,
+        overflow: 'hidden',
+    },
+    eventImage: {
+        width: '100%',
+        height: 100,
+        marginBottom: 5,
+    },
 });
 
 export default Events;
