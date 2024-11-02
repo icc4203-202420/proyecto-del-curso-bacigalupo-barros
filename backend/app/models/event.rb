@@ -13,6 +13,8 @@ class Event < ApplicationRecord
                                     message: 'must be a valid image format' },
                     size: { less_than: 5.megabytes }
 
+  EVENT_DURATION = 2.hours # Ajusta esto a la duración real del evento
+
   def flyer_url
     flyer.attached? ? Rails.application.routes.url_helpers.rails_blob_url(flyer, only_path: true) : nil
   end
@@ -23,5 +25,14 @@ class Event < ApplicationRecord
 
   def thumbnail
     flyer.variant(resize_to_limit: [200, nil]).processed
+  end  
+
+  def finished?
+    end_time.present? && end_time < Time.current
+  end  
+
+  def video_generated?
+
+    !!self.video_generated_attribute
   end  
 end

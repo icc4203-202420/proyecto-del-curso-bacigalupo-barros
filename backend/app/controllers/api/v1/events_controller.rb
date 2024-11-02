@@ -91,6 +91,22 @@ end
       end
   end
   
+  # POST /api/v1/events/:id/generate_summary
+  def generate_summary
+    event = Event.find(params[:id])
+
+    if event.finished? && !event.video_generated?
+      EventSummaryJob.perform_later(event.id)
+      render json: { message: "Resumen en proceso. Recibirás una notificación cuando esté listo." }, status: :accepted
+    else
+      errors = []
+      errors << "Evento no terminado." unless event.finished?
+      errors << "Resumen ya generado." if event.video_generated?
+      render json: { error: errors.join(" ") }, status: :unprocessable_entity
+    end
+  end
+
+  
   def upload_picture
     event = Event.find(params[:id])
     if event.present?
