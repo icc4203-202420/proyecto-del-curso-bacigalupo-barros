@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       end
       resources :events do
         post 'upload_picture', on: :member
+        post 'generate_summary', on: :member  # Ruta para generar el resumen
+        get 'summary', on: :member            # Ruta para ver el resumen
         resources :attendances, only: [:create, :index]
       end
       resources :reviews, only: [:create, :update, :destroy]

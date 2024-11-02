@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { API_URL } from '../config';
 import { launchImageLibrary } from 'react-native-image-picker';
+import EventSummaryGenerator from './EventSummaryGenerator';
 
 const Events = () => {
     const route = useRoute();
@@ -30,7 +31,7 @@ const Events = () => {
                 if (data.events) {
                     const eventsWithPictures = data.events.map(event => ({
                         ...event,
-                        event_pictures: Array.isArray(event.event_pictures) ? event.event_pictures : [] // Inicializa como array si es necesario
+                        event_pictures: Array.isArray(event.event_pictures) ? event.event_pictures : []
                     }));
                     setEvents(eventsWithPictures);
                 }
@@ -66,7 +67,6 @@ const Events = () => {
     };
 
     const handleCheckIn = (event) => {
-        console.log("Navigating to AddAttendance with bar_id:", bar_id, "and event_id:", event.id);
         navigation.navigate('AddAttendance', { bar_id, event_id: event.id });
     };
 
@@ -88,19 +88,15 @@ const Events = () => {
 
             const data = await response.json();
             if (response.ok) {
-                console.log('Imagen subida con éxito:', data.message);
-                // Actualizar el evento localmente con la nueva imagen
                 setEvents((prevEvents) =>
                     prevEvents.map((evt) =>
                         evt.id === eventId ? { ...evt, event_pictures: [...evt.event_pictures, { id: data.id, url: data.url }] } : evt
                     )
                 );
             } else {
-                console.error('Error al subir la imagen:', data.error);
                 Alert.alert('Error', 'No se pudo subir la imagen.');
             }
         } catch (error) {
-            console.error('Error en la solicitud:', error);
             Alert.alert('Error', 'Error en la carga de la imagen.');
         } finally {
             setImageUploading(false);
@@ -133,40 +129,38 @@ const Events = () => {
 
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => handleImageChange(item)} // Seleccionar imagen para el evento
+                                onPress={() => handleImageChange(item)}
                             >
                                 <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Subir Imagen'}</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => handleCheckIn(item)} // Agregar asistencia
+                                onPress={() => handleCheckIn(item)}
                             >
                                 <Text style={styles.buttonText}>Agregar Asistencia</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={styles.button}
-                                onPress={() => handleViewAttendances(item)} // Ver asistencias
+                                onPress={() => handleViewAttendances(item)}
                             >
                                 <Text style={styles.buttonText}>Ver Asistencias</Text>
                             </TouchableOpacity>
 
-                            {/* Mostrar imágenes del evento */}
+                            <EventSummaryGenerator eventId={item.id} />
+
                             <View style={styles.imageContainer}>
                                 {Array.isArray(item.event_pictures) && item.event_pictures.length > 0 ? (
-                                    item.event_pictures.map((picture) => {
-                                        console.log('Mostrando imagen:', picture.url);
-                                        return (
-                                            <Image 
-                                                key={picture.id} 
-                                                source={{ uri: picture.url }} 
-                                                style={styles.eventImage} 
-                                                resizeMode="contain" 
-                                                onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)} // Manejar errores de carga
-                                            />
-                                        );
-                                    })
+                                    item.event_pictures.map((picture) => (
+                                        <Image 
+                                            key={picture.id} 
+                                            source={{ uri: picture.url }} 
+                                            style={styles.eventImage} 
+                                            resizeMode="contain" 
+                                            onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)}
+                                        />
+                                    ))
                                 ) : (
                                     <Text>No hay imágenes disponibles.</Text>
                                 )}

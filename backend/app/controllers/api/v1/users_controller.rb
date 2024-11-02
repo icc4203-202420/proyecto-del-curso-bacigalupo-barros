@@ -1,4 +1,3 @@
-require_relative '../services/push_notification_service'
 class API::V1::UsersController < ApplicationController
   respond_to :json
   include Authenticable
@@ -42,15 +41,6 @@ class API::V1::UsersController < ApplicationController
   def create_friendship
     @friendship = @user.friendships.new(friendship_params)
     if @friendship.save
-      friend_device_token = User.find(friendship_params[:friend_id]).device_token
-      # Envía la notificación al amigo
-      PushNotificationService.send_notification(
-        to: friend_device_token,
-        title: 'Nueva Amistad',
-        body: "#{@user.first_name} te ha agregado como amigo.",
-        data: { screen: 'friends' } # Aquí puedes agregar datos adicionales si es necesario
-      )
-
       render json: @friendship, status: :created
     else
       render json: @friendship.errors, status: :unprocessable_entity
