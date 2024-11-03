@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { API_URL } from '../config';
 import { launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 import EventSummaryGenerator from './EventSummaryGenerator';
 
 const Events = () => {
@@ -66,25 +67,31 @@ const Events = () => {
     }, [bar_id]);
 
     const handleImageChange = async (event) => {
-        const result = await launchImageLibrary({
-            mediaType: 'photo',
-            includeBase64: true,
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+        if (permissionResult.granted === false) {
+            Alert.alert('Permiso requerido', 'Se necesita acceso a la galería para seleccionar una imagen.');
+            return;
+        }
+    
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            base64: true,
+            quality: 1,
         });
-
-        if (result.didCancel) {
-            console.log('Usuario canceló la selección de imagen');
-            return;
-        } else if (result.error) {
-            Alert.alert('Error', 'Error al seleccionar la imagen');
-            return;
-        } else if (result.assets && result.assets.length > 0) {
+    
+        if (!result.canceled) {
             const selectedFile = result.assets[0];
             const fileType = selectedFile.type || 'image/jpeg';
             const base64Image = `data:${fileType};base64,${selectedFile.base64}`;
             setSelectedImage({ eventId: event.id, base64Image });
             setModalVisible(true);
+        } else {
+            console.log('Usuario canceló la selección de imagen');
         }
     };
+    
 
     const handleUserSelection = (user) => {
         // Alternar la selección del usuario
