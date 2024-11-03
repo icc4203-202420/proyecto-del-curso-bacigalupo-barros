@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
 import { API_URL } from '../config';
+import { registerForPushNotificationsAsync } from "../Notifications";
+
 const SignUpScreen = () => {
   const [formData, setFormData] = useState({
     first_name: '',
@@ -9,16 +11,31 @@ const SignUpScreen = () => {
     password: '',
     password_confirmation: '',
     handle: '',
+    push_token: '', // Aquí almacenaremos el token de notificación
     address_attributes: {
       line1: '',
       line2: '',
       city: '',
       country_id: ''
-    }
+    },
   });
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    // Obtener el token de notificación al cargar la pantalla
+    const getPushToken = async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        setFormData((prevData) => ({
+          ...prevData,
+          push_token: token, // Guardamos el token en el formulario
+        }));
+      }
+    };
+    getPushToken();
+  }, []);
 
   const handleChange = (name, value) => {
     setFormData(prevData => ({
@@ -44,7 +61,7 @@ const SignUpScreen = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ user: formData })
+        body: JSON.stringify({ user: formData }) // Enviamos el formulario con el token de push incluido
       });
 
       const data = await response.json();

@@ -40,12 +40,25 @@ class API::V1::UsersController < ApplicationController
   #POST friendships
   def create_friendship
     @friendship = @user.friendships.new(friendship_params)
+    
     if @friendship.save
+      friend = User.find(@friendship.friend_id)
+      
+      if friend.push_token.present?
+        PushNotificationService.send_notification(
+          to: friend.push_token,
+          title: "Nuevo amigo!",
+          body: "#{@user.handle} te ha agregado como amigo.",
+          data: { screen: "Home" } 
+        )
+      end
+      
       render json: @friendship, status: :created
     else
       render json: @friendship.errors, status: :unprocessable_entity
     end
   end
+  
 
   private
 
@@ -60,7 +73,7 @@ class API::V1::UsersController < ApplicationController
 
   def user_params
     params.fetch(:user, {}).
-        permit(:id, :first_name, :last_name, :email, :age,
+        permit(:id, :first_name, :last_name, :email, :age, :push_token,
             { address_attributes: [:id, :line1, :line2, :city, :country, :country_id, 
               country_attributes: [:id, :name]],
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]
