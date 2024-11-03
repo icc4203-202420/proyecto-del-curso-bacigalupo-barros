@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a9f01e20-e84f-4167-9eaa-ffc7fdc0feac"
+      }
+    },
+    "owner": "freddybc02"
   }
 }

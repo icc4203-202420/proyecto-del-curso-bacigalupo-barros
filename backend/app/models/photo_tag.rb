@@ -4,6 +4,3 @@ class PhotoTag < ApplicationRecord
   
     validates :user_id, uniqueness: { scope: :event_picture_id, message: "Ya está etiquetado en esta foto" }
 end
-  
-
-  
