@@ -133,7 +133,7 @@ const Events = () => {
             });
 
             const data = await response.json();
-            const LOCAL_URL = `http://192.168.1.94:3000/`;
+            const LOCAL_URL = `http://10.33.0.108:3000/`;
             if (response.ok) {
                 const imageUrl = data.url.startsWith('http') ? data.url : `${LOCAL_URL}${data.url}`;
                 setEvents((prevEvents) =>
