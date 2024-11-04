@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_02_233140) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_04_182848) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -153,6 +153,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_02_233140) do
     t.string "video_url"
     t.datetime "end_time"
     t.datetime "start_time"
+    t.text "summary"
     t.index ["bar_id"], name: "index_events_on_bar_id"
   end
 

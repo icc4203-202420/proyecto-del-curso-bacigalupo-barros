@@ -83,16 +83,33 @@ class API::V1::EventsController < ApplicationController
   # POST /api/v1/events/:id/generate_summary
   def generate_summary
     event = Event.find(params[:id])
-    if event.finished? && !event.video_generated?
+    if event.finished? && event.video_generated == false
       EventSummaryJob.perform_later(event.id)
       render json: { message: "Resumen en proceso. Recibirás una notificación cuando esté listo." }, status: :accepted
     else
       errors = []
       errors << "Evento no terminado." unless event.finished?
-      errors << "Resumen ya generado." if event.video_generated?
+      errors << "Resumen ya generado." if event.video_generated
+      Rails.logger.error("Errores de procesamiento: #{errors.join(', ')}") # Agregar log para más detalle
       render json: { error: errors.join(" ") }, status: :unprocessable_entity
     end
   end
+  
+  
+
+  # GET /api/v1/events/:id/summary
+  def summary
+    event = Event.find_by(id: params[:id])
+
+    if event.nil?
+      render json: { error: 'Evento no encontrado' }, status: :not_found
+    elsif event.summary.present?
+      render json: { summary: event.summary }, status: :ok
+    else
+      render json: { message: 'El resumen aún no está disponible. Por favor, intenta de nuevo más tarde.' }, status: :accepted
+    end
+  end
+
 
   # POST /api/v1/events/:id/upload_picture
   def upload_picture
