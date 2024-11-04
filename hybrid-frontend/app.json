@@ -28,6 +28,9 @@
         "projectId": "a9f01e20-e84f-4167-9eaa-ffc7fdc0feac"
       }
     },
-    "owner": "proyecto1_apps"
+    "owner": "proyecto1_apps",
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

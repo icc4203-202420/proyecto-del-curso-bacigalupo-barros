@@ -3,6 +3,8 @@ import { View, Text, Button, Modal, ActivityIndicator, TouchableOpacity, FlatLis
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../config';
+import { saveItem, getItem } from '../Storage';
+
 
 const AddFriend = ({ userId, friendId, onAddFriend, existingFriendships }) => {
   const [barId, setBarId] = useState('');
@@ -47,7 +49,7 @@ const AddFriend = ({ userId, friendId, onAddFriend, existingFriendships }) => {
     }
 
     setIsSubmitting(true);
-    const storedToken = await AsyncStorage.getItem('authToken');
+    const storedToken = await getItem('authToken');
     const token = storedToken ? storedToken.replace(/"/g, '') : null;
 
     if (!token) {

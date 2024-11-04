@@ -3,7 +3,7 @@ import { View, TextInput, Button, Text, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../config';
-
+import { saveItem, getItem } from '../Storage';
 const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
   const [formData, setFormData] = useState({
     email: '',
@@ -38,7 +38,7 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
       if (response.ok) {
         const token = data.status.token; 
         if (token) {
-          await AsyncStorage.setItem('authToken', JSON.stringify(token));
+          await saveItem('authToken', token);
           onLogin(token); 
           setSuccessMessage('Login successful!');
           console.log(token)

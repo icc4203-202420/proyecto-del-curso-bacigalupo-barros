@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddFriend from './AddFriend';
 import { useNavigation } from '@react-navigation/native'; 
 import { API_URL } from '../config';
+import { getItem } from '../Storage';
 
 const UsersSearch = () => {
     const [users, setUsers] = useState(null);
@@ -22,7 +23,7 @@ const UsersSearch = () => {
                     setUsers(data.users);
                 }
 
-                const token = await AsyncStorage.getItem('authToken');
+                const token = await getItem('authToken');
                 if (token) {
                     const decodedToken = JSON.parse(atob(token.split('.')[1])); 
                     setUserId(decodedToken.sub);

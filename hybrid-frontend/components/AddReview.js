@@ -4,6 +4,8 @@ import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../config';
+import { saveItem, getItem } from '../Storage';
+
 
 const AddReview = ({ id, onNewReview }) => {
     const [rating, setRating] = useState(3);
@@ -26,7 +28,7 @@ const AddReview = ({ id, onNewReview }) => {
         }
 
         try {
-            const storedToken = await AsyncStorage.getItem('authToken');
+            const storedToken = await getItem('authToken');
             const token = storedToken ? storedToken.replace(/"/g, '') : null;
 
             if (!token) {

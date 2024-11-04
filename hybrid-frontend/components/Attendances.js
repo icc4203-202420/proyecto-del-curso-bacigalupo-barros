@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { API_URL } from '../config';
+import { saveItem, getItem } from '../Storage';
+
 
 const Attendances = () => {
     const [attendances, setAttendances] = useState([]);
@@ -13,7 +15,7 @@ const Attendances = () => {
 
     useEffect(() => {
         const fetchAttendances = async () => {
-            const storedToken = await AsyncStorage.getItem('authToken');
+            const storedToken = await getItem('authToken');
             const token = storedToken ? storedToken.replace(/"/g, '') : null; 
 
             if (!token) {
