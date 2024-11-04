@@ -4,6 +4,8 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
+import { saveItem, getItem } from '../Storage';
+
 
 const AddAttendance = ({ onCheckIn }) => {
     const route = useRoute();
@@ -23,7 +25,7 @@ const AddAttendance = ({ onCheckIn }) => {
     const handleCheckIn = async () => {
         setIsCheckingIn(true);
         
-        const storedToken = await AsyncStorage.getItem('authToken');
+        const storedToken = await getItem('authToken');
         const token = storedToken ? storedToken.replace(/"/g, '') : null;
 
         if (!token) {
