@@ -1,11 +1,12 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
   include Authenticable
-  before_action :verify_jwt_token, only: [:create, :update]
+  before_action :verify_jwt_token, only: [:create, :update, :create_friendship]
   before_action :set_user, only: [:show, :update, :friendships, :create_friendship]  
   
   def index
     @users = User.includes(:reviews, :address).all   
+    render json: { users: @users.as_json(include: [:address, :reviews]) }, status: :ok
   end
 
   def show
@@ -39,22 +40,40 @@ class API::V1::UsersController < ApplicationController
   #POST friendships
   def create_friendship
     @friendship = @user.friendships.new(friendship_params)
+    
     if @friendship.save
+      friend = User.find(@friendship.friend_id)
+      
+      if friend.push_token.present?
+        PushNotificationService.send_notification(
+          to: friend.push_token,
+          title: "Nuevo amigo!",
+          body: "#{@user.handle} te ha agregado como amigo.",
+          data: { screen: "Home" } 
+        )
+      end
+      
       render json: @friendship, status: :created
     else
       render json: @friendship.errors, status: :unprocessable_entity
     end
   end
+  
 
   private
 
   def set_user
-    @user = User.find(params[:id])
+    if params[:id].present?
+      @user = User.find_by(id: params[:id])
+      render json: { error: 'User not found' }, status: :not_found if @user.nil?
+    else
+      render json: { error: 'User ID is required' }, status: :bad_request
+    end
   end
 
   def user_params
     params.fetch(:user, {}).
-        permit(:id, :first_name, :last_name, :email, :age,
+        permit(:id, :first_name, :last_name, :email, :age, :push_token,
             { address_attributes: [:id, :line1, :line2, :city, :country, :country_id, 
               country_attributes: [:id, :name]],
               reviews_attributes: [:id, :text, :rating, :beer_id, :_destroy]

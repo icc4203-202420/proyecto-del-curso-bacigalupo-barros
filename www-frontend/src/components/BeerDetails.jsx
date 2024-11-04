@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, CircularProgress, Card, CardContent, Button } from '@mui/material';
 import BeerReviews from './BeerReviews';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { ArrowBack } from '@mui/icons-material';
+
 
 const BeerDetails = () => {
     const { id } = useParams();
@@ -74,24 +77,33 @@ const BeerDetails = () => {
                             )}
                             <Button
                                 component={Link}
-                                to="/beers"
+                                to={`/beers/${id}/reviews`}
                                 variant="contained"
-                                color="primary"
+                                sx={{ bgcolor: '#A020F0' }}
                                 style={{ marginTop: '16px' }}
                             >
-                                Back to Beers
+                                <StarBorderIcon/> Reviews
                             </Button>
 
                         </CardContent>
                     </Card>
                     <Button
                         component={Link}
-                        to={`/beers/${id}/reviews`}
+                        to="/beers"
                         variant="contained"
-                        color="primary"
-                        style={{ marginTop: '16px' }}
-                    >
-                        Reviews
+                        sx={{ 
+                            bgcolor: '#A020F0', 
+                            position: 'fixed', 
+                            top: 65, 
+                            left: 5, 
+                            zIndex: 9999,
+                            display: 'flex',
+                            alignItems: 'center',
+                            color: 'white'
+                        }}
+                        >
+                        <ArrowBack sx={{ mr: 1 }} />
+                        Vuelta a Beers
                     </Button>
 
                     {/*<BeerReviews beerId={id} />*/}
