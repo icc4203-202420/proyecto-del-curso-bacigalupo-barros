@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity, Image, Alert, Modal, TextInput } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity, Image, Alert, Modal, TextInput, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -89,6 +89,31 @@ const Events = () => {
             setModalVisible(true);
         } else {
             console.log('Usuario canceló la selección de imagen');
+        }
+    };
+
+    const handleCameraCapture = async (event) => {
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        
+        if (permissionResult.granted === false) {
+            Alert.alert('Permiso requerido', 'Se necesita acceso a la cámara para tomar una foto.');
+            return;
+        }
+    
+        const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            base64: true,
+            quality: 1,
+        });
+    
+        if (!result.canceled) {
+            const selectedFile = result.assets[0];
+            const fileType = selectedFile.type || 'image/jpeg';
+            const base64Image = `data:${fileType};base64,${selectedFile.base64}`;
+            setSelectedImage({ eventId: event.id, base64Image });
+            setModalVisible(true);
+        } else {
+            console.log('Usuario canceló la captura de imagen');
         }
     };
     
@@ -193,6 +218,13 @@ const Events = () => {
 
                             <TouchableOpacity
                                 style={styles.button}
+                                onPress={() => handleCameraCapture(item)} // Tomar foto con la cámara
+                            >
+                                <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Capturar con cámara'}</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.button}
                                 onPress={() => handleCheckIn(item)} // Agregar asistencia
                             >
                                 <Text style={styles.buttonText}>Agregar Asistencia</Text>
@@ -242,25 +274,37 @@ const Events = () => {
                 visible={modalVisible}
                 onRequestClose={() => setModalVisible(false)}
             >
-                <View style={styles.modalContainer}>
-                    <Text>Selecciona Usuarios</Text>
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Buscar usuarios..."
-                        value={searchText}
-                        onChangeText={setSearchText}
-                    />
-                    <FlatList
-                        data={users.filter(user => user.handle.toLowerCase().includes(searchText.toLowerCase()))}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity onPress={() => handleUserSelection(item)} style={[styles.userItem, selectedUsers.includes(item) && styles.selectedUser]}>
-                                <Text>{item.handle}</Text>
-                            </TouchableOpacity>
-                        )}
-                    />
-                    <Button title="Confirmar Selección" onPress={handleConfirmSelection} />
-                    <Button title="Cerrar" onPress={() => setModalVisible(false)} />
+                <View style={styles.modalBackdrop}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Selecciona Usuarios</Text>
+                        
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Buscar usuarios..."
+                            value={searchText}
+                            onChangeText={setSearchText}
+                        />
+
+                        <ScrollView style={styles.userListContainer}>
+                            <FlatList
+                                data={users.filter(user => user.handle.toLowerCase().includes(searchText.toLowerCase()))}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity 
+                                        onPress={() => handleUserSelection(item)} 
+                                        style={[styles.userItem, selectedUsers.includes(item) && styles.selectedUser]}
+                                    >
+                                        <Text>{item.handle}</Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </ScrollView>
+
+                        <View style={styles.modalButtonContainer}>
+                            <Button title="Confirmar Selección" onPress={handleConfirmSelection} />
+                            <Button title="Cerrar" onPress={() => setModalVisible(false)} />
+                        </View>
+                    </View>
                 </View>
             </Modal>
         </View>
@@ -340,6 +384,55 @@ const styles = StyleSheet.create({
     selectedUser: {
         backgroundColor: '#D3D3D3',
     },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '90%',
+        maxHeight: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    searchInput: {
+        width: '100%',
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+    },
+    userListContainer: {
+        maxHeight: 250,
+        marginBottom: 20,
+    },
+    userItem: {
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
+    selectedUser: {
+        backgroundColor: '#e0e0e0',
+    },
+    modalButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
 });
+
 
 export default Events;
