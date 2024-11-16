@@ -4,6 +4,7 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveItem, getItem } from '../Storage';
 
 const FeedItem = ({ item }) => {
   const navigation = useNavigation();
@@ -43,7 +44,8 @@ const Feed = () => {
 
   const fetchFeed = async (resetOffset = false) => {
     try {
-      const token = await AsyncStorage.getItem('token');
+      const storedToken = await getItem('authToken');
+      const token = storedToken ? storedToken.replace(/"/g, '') : null;
       if (!token) {
         console.log('No token found');
         setLoading(false);
@@ -53,7 +55,7 @@ const Feed = () => {
       const newOffset = resetOffset ? 0 : offset;
       console.log('Fetching feed with offset:', newOffset);
       
-      const response = await axios.get(`${API_URL}/api/v1/feed`, {
+      const response = await axios.get(`${API_URL}/feed`, {
         params: { offset: newOffset },
         headers: {
           'Authorization': `Bearer ${token}`
