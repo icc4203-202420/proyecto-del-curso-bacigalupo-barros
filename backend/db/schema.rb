@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_04_182848) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_14_232646) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -157,6 +157,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_04_182848) do
     t.index ["bar_id"], name: "index_events_on_bar_id"
   end
 
+  create_table "feed_items", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "reviewable_type", null: false
+    t.integer "reviewable_id", null: false
+    t.string "activity_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_feed_items_on_created_at"
+    t.index ["reviewable_type", "reviewable_id"], name: "index_feed_items_on_reviewable"
+    t.index ["reviewable_type", "reviewable_id"], name: "index_feed_items_on_reviewable_type_and_reviewable_id"
+    t.index ["user_id"], name: "index_feed_items_on_user_id"
+  end
+
   create_table "friendships", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "friend_id", null: false
@@ -178,6 +191,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_04_182848) do
     t.index ["event_picture_id", "user_id"], name: "index_photo_tags_on_event_picture_id_and_user_id", unique: true
     t.index ["event_picture_id"], name: "index_photo_tags_on_event_picture_id"
     t.index ["user_id"], name: "index_photo_tags_on_user_id"
+  end
+
+  create_table "posts", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.text "content", null: false
+    t.string "postable_type"
+    t.integer "postable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["postable_type", "postable_id"], name: "index_posts_on_postable"
+    t.index ["postable_type", "postable_id"], name: "index_posts_on_postable_type_and_postable_id"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "review_counters", force: :cascade do |t|
@@ -231,11 +256,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_04_182848) do
   add_foreign_key "event_pictures", "events"
   add_foreign_key "event_pictures", "users"
   add_foreign_key "events", "bars"
+  add_foreign_key "feed_items", "users"
   add_foreign_key "friendships", "bars"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
   add_foreign_key "photo_tags", "event_pictures"
   add_foreign_key "photo_tags", "users"
+  add_foreign_key "posts", "users"
   add_foreign_key "reviews", "beers", on_delete: :cascade
   add_foreign_key "reviews", "users"
 end

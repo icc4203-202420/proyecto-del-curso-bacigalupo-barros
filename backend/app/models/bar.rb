@@ -7,6 +7,8 @@ class Bar < ApplicationRecord
   has_many :beers, through: :bars_beers
 
   has_one_attached :image
+  has_many :posts, as: :postable
+  has_many :reviews
 
   accepts_nested_attributes_for :address 
 
@@ -14,6 +16,7 @@ class Bar < ApplicationRecord
   validates :image, content_type: { in: ['image/png', 'image/jpg', 'image/jpeg'],
                                     message: 'must be a valid image format' },
                     size: { less_than: 5.megabytes }
+
 
   def thumbnail
     image.variant(resize_to_limit: [200, 200]).processed
