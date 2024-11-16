@@ -23,7 +23,7 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
-    "expo": "~51.0.28",
+    "expo": "^52.0.7",
     "expo-image-picker": "~15.0.7",
     "expo-linking": "^6.3.1",
     "expo-notifications": "^0.28.19",
