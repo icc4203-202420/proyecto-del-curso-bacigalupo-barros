@@ -32,6 +32,8 @@ class User < ApplicationRecord
   has_many :photo_tags
   has_many :tagged_pictures, through: :photo_tags, source: :event_picture
 
+  has_many :posts
+
   def generate_jwt
     Warden::JWTAuth::UserEncoder.new.call(self, :user, nil)[0]
   end

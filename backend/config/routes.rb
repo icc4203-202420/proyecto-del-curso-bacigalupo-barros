@@ -12,8 +12,13 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Agregar aquí la ruta para ActionCable
+  mount ActionCable.server => '/api/v1/cable'  # Esto es lo que necesitas agregar
+
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      resources :feed, only: [:index]
+      resources :posts, only: [:index, :create]
       resources :bars do
         resources :events do
           resources :attendances, only: [:create, :index]

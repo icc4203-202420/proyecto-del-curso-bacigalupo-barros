@@ -71,4 +71,10 @@ Rails.application.configure do
   
   config.action_mailer.default_url_options = { host: 'localhost', port: 3001 }
   config.default_url_options = { host: 'localhost', port: 3001 }
+  # Permitir peticiones de cualquier origen en desarrollo
+  config.action_cable.disable_request_forgery_protection = true
+  config.action_cable.allowed_request_origins = [/http:\/\/*/, /https:\/\/*/]
+  
+  # Configurar el mount path para ActionCable
+  config.action_cable.mount_path = '/api/v1/cable'
 end

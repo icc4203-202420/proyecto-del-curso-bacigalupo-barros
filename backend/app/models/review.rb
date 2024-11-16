@@ -7,9 +7,19 @@ class Review < ApplicationRecord
 
   after_save :update_beer_rating
   after_destroy :update_beer_rating
+  has_one :feed_item, as: :reviewable, dependent: :destroy
+  after_create :create_feed_item
 
   private
 
+  def create_feed_item
+    FeedItem.create!(
+      user: self.user,
+      reviewable: self,
+      activity_type: 'review'
+    )
+  end
+  
   def update_beer_rating
     beer.update_avg_rating
   end
