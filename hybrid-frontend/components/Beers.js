@@ -46,7 +46,7 @@ const Beers = () => {
                 value={searchTerm}
             />
             {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size={48} color="#0000ff" />
             ) : (
                 <FlatList
                     data={filteredBeers}

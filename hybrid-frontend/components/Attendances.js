@@ -64,7 +64,7 @@ const Attendances = () => {
                     )}
                 />
             ) : (
-                <ActivityIndicator size="large" color="#A020F0" />
+                <ActivityIndicator size={48} color="#A020F0" />
             )}
         </View>
     );

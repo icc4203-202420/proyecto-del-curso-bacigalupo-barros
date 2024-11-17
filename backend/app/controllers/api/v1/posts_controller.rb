@@ -1,5 +1,5 @@
 # app/controllers/api/v1/posts_controller.rb
-module Api
+module API
     module V1
       class PostsController < ApplicationController
         def index

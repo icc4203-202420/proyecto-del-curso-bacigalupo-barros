@@ -68,7 +68,7 @@ const AddAttendance = ({ onCheckIn }) => {
     return (
         <View style={styles.container}>
             {isCheckingIn ? (
-                <ActivityIndicator size="large" color="#A020F0" />
+                <ActivityIndicator size={48} color="#A020F0" />
             ) : (
                 <>
                     <Button

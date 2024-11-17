@@ -37,7 +37,7 @@ const BeerDetailsScreen = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size={48} color="#0000ff" />
             </View>
         );
     }

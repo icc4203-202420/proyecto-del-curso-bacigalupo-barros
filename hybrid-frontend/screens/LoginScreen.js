@@ -33,12 +33,16 @@ const LogInScreen = ({ onLogin = () => console.log('Logged in!') }) => {
       });
 
       const data = await response.json();
-      console.log('Response data:', data); 
+      console.log('Response data:', data);
+      console.log('userid:', data.status.data.user.id); 
 
       if (response.ok) {
         const token = data.status.token; 
+        const userId = data.status.data.user.id
         if (token) {
           await saveItem('authToken', token);
+          await saveItem('userId', userId.toString());
+          console.log(userId)
           onLogin(token); 
           setSuccessMessage('Login successful!');
           console.log(token)

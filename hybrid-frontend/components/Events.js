@@ -196,7 +196,7 @@ const Events = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Eventos del Bar</Text>
-
+    
             {events.length > 0 ? (
                 <FlatList
                     data={events}
@@ -208,37 +208,37 @@ const Events = () => {
                             <Text>Fecha: {formatDate(item.date)}</Text>
                             <Text>Hora Inicio: {item.start_date}</Text>
                             <Text>Hora Fin: {item.end_date}</Text>
-
+    
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => handleImageChange(item)} // Seleccionar imagen para el evento
                             >
                                 <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Subir Imagen'}</Text>
                             </TouchableOpacity>
-
+    
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => handleCameraCapture(item)} // Tomar foto con la cámara
                             >
                                 <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Capturar con cámara'}</Text>
                             </TouchableOpacity>
-
+    
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => handleCheckIn(item)} // Agregar asistencia
                             >
                                 <Text style={styles.buttonText}>Agregar Asistencia</Text>
                             </TouchableOpacity>
-
+    
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => handleViewAttendances(item)} // Ver asistencias
                             >
                                 <Text style={styles.buttonText}>Ver Asistencias</Text>
                             </TouchableOpacity>
-
+    
                             <EventSummaryGenerator eventId={item.id} />
-
+    
                             <View style={styles.imageContainer}>
                                 {Array.isArray(item.event_pictures) && item.event_pictures.length > 0 ? (
                                     item.event_pictures.map((picture) => (
@@ -261,13 +261,13 @@ const Events = () => {
             ) : (
                 <Text>No hay eventos disponibles.</Text>
             )}
-
+    
             <Button
                 title="Volver a Bares"
                 color="#A020F0"
                 onPress={() => navigation.goBack()}
             />
-
+    
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -284,22 +284,20 @@ const Events = () => {
                             value={searchText}
                             onChangeText={setSearchText}
                         />
-
-                        <ScrollView style={styles.userListContainer}>
-                            <FlatList
-                                data={users.filter(user => user.handle.toLowerCase().includes(searchText.toLowerCase()))}
-                                keyExtractor={(item) => item.id.toString()}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity 
-                                        onPress={() => handleUserSelection(item)} 
-                                        style={[styles.userItem, selectedUsers.includes(item) && styles.selectedUser]}
-                                    >
-                                        <Text>{item.handle}</Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </ScrollView>
-
+    
+                        <FlatList
+                            data={users.filter(user => user.handle.toLowerCase().includes(searchText.toLowerCase()))}
+                            keyExtractor={(item) => item.id.toString()}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity 
+                                    onPress={() => handleUserSelection(item)} 
+                                    style={[styles.userItem, selectedUsers.includes(item) && styles.selectedUser]}
+                                >
+                                    <Text>{item.handle}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+    
                         <View style={styles.modalButtonContainer}>
                             <Button title="Confirmar Selección" onPress={handleConfirmSelection} />
                             <Button title="Cerrar" onPress={() => setModalVisible(false)} />
@@ -309,6 +307,7 @@ const Events = () => {
             </Modal>
         </View>
     );
+    
 };
 
 const styles = StyleSheet.create({

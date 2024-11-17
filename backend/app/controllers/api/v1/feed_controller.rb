@@ -11,7 +11,7 @@ class API::V1::FeedController < ApplicationController
                            .order(created_at: :desc)
                            .limit(20)
                            .offset(params[:offset].to_i || 0)
-  
+      Rails.logger.info "Feed items retrieved: #{@feed_items.map(&:inspect)}"
       render json: {
         feed_items: @feed_items.map { |item| feed_item_json(item) },
         has_more: @feed_items.size == 20
