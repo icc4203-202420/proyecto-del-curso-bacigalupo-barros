@@ -19,56 +19,49 @@ class API::V1::EventsController < ApplicationController
 
   # GET /api/v1/events/:id
   def show
-    if @event
-      event_json = @event.as_json
-      if @event.flyer.attached?
-        event_json[:flyer_url] = rails_blob_url(@event.flyer, only_path: false)
-      end
-      if @event.event_pictures.attached?
-        event_json[:event_pictures] = @event.event_pictures.map do |pic|
-          {
-            id: pic.id,
-            url: rails_blob_url(pic, only_path: false),
-            thumbnail_url: rails_blob_url(pic.variant(resize_to_limit: [200, nil]).processed, only_path: false)
-          }
-        end
-      end
-      render json: { event: event_json }, status: :ok
+    @event_pictures = @event.event_pictures.includes(:user)    
+    event_pictures_data = @event_pictures.map do |picture|
+      { 
+        id: picture.id, 
+        description: picture.description, 
+        image_url: url_for(picture.image),
+        user_handle: picture.user.handle
+     }
+    end
+  
+    if @event.flyer.attached?
+      render json: @event.as_json.merge({
+        image_url: url_for(@event.image),
+        thumbnail_url: url_for(@event.thumbnail)
+      }), status: :ok
     else
-      render json: { error: "Evento no encontrado" }, status: :not_found
+      render json: { 
+        event: @event.as_json, 
+        event_pictures: event_pictures_data
+      }, status: :ok
     end
   end
 
   # POST /api/v1/events
   def create
-    @event = Event.new(event_params.except(:flyer_base64, :event_pictures_base64))
-    attach_flyer_from_base64 if event_params[:flyer_base64]
-    attach_event_pictures_from_base64 if event_params[:event_pictures_base64]
+    @event = Event.new(event_params.except(:image_base64))
+    handle_image_attachment if event_params[:image_base64]
 
     if @event.save
-      render json: {
-        event: @event.as_json.merge(
-          flyer_url: @event.flyer.attached? ? rails_blob_url(@event.flyer, only_path: false) : nil,
-          event_pictures: @event.event_pictures.map { |pic| rails_blob_url(pic, only_path: false) }
-        ),
-        message: 'Event created successfully.'
-      }, status: :created
+        render json: { event: @event, message: 'Event created successfully.' }, status: :created
     else
-      Rails.logger.error(@event.errors.full_messages)
-      render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
+        render json: @event.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH /api/v1/events/:id
   def update
-    attach_flyer_from_base64 if event_params[:flyer_base64]
-    attach_event_pictures_from_base64 if event_params[:event_pictures_base64]
+      handle_image_attachment if event_params[:image_base64]
 
-    if @event.update(event_params.except(:flyer_base64, :event_pictures_base64))
-      render json: { event: @event, message: 'Event updated successfully.' }, status: :ok
-    else
-      render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
-    end
+      if @event.update(event_params.except(:image_base64))
+          render json: { event: @event, message: 'Event updated successfully.' }, status: :ok
+      else
+          render json: @event.errors, status: :unprocessable_entity
+      end
   end
 
   # DELETE /api/v1/events/:id
@@ -111,47 +104,6 @@ class API::V1::EventsController < ApplicationController
   end
 
 
-  # POST /api/v1/events/:id/upload_picture
-  def upload_picture
-    event = Event.find_by(id: params[:id])
-    unless event
-      render json: { error: 'Evento no encontrado' }, status: :not_found and return
-    end
-
-    # Asegurarse de que los datos de imagen están presentes
-    image_data = params[:image]
-    if image_data.blank?
-      render json: { error: 'No se ha proporcionado ninguna imagen.' }, status: :unprocessable_entity and return
-    end
-
-    # Decodificar la imagen usando el método que ya tienes
-    decoded_image = decode_image(image_data)
-    if decoded_image.nil?
-      render json: { error: 'Imagen inválida' }, status: :unprocessable_entity and return
-    end
-
-    # Crear el blob y adjuntar la imagen al evento
-    begin
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: decoded_image[:io],
-        filename: decoded_image[:filename],
-        content_type: decoded_image[:content_type]
-      )
-
-      event.event_pictures.attach(blob)
-
-      render json: {
-        message: 'Imagen subida con éxito',
-        id: event.event_pictures.last.id,
-        url: rails_blob_url(event.event_pictures.last, only_path: true)
-      }, status: :ok
-    rescue => e
-      Rails.logger.error("Error al subir la imagen: #{e.message}")
-      render json: { error: 'Error al subir la imagen. Por favor, intenta de nuevo.' }, status: :unprocessable_entity
-    end
-  end
-
-
   private
 
   def set_event
@@ -166,7 +118,7 @@ class API::V1::EventsController < ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(:name, :description, :date, :bar_id, :flyer_base64, :start_date, :end_date, event_pictures_base64: [])
+    params.require(:event).permit(:name, :description, :date, :bar_id, :flyer_base64, :start_date, :end_date, :image_base64)
   end
 
   def attach_flyer_from_base64
@@ -178,15 +130,12 @@ class API::V1::EventsController < ApplicationController
     )
   end
 
-  def attach_event_pictures_from_base64
-    event_params[:event_pictures_base64].each do |image_base64|
-      decoded_image = decode_image(image_base64)
-      @event.event_pictures.attach(
-        io: decoded_image[:io],
-        filename: decoded_image[:filename],
+  def handle_image_attachment
+    decode_image = decode_image(event_params[:image_base64])
+    @event.flyer.attach(io: decoded_image[:io],
+        filename: decode_image[:filename],
         content_type: decoded_image[:content_type]
-      )
-    end
+    )
   end
 
   def decode_image(base64_string)

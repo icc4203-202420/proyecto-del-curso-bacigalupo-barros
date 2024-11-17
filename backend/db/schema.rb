@@ -133,7 +133,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_232646) do
     t.integer "event_id", null: false
     t.integer "user_id", null: false
     t.text "description"
-    t.string "image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_event_pictures_on_event_id"
@@ -181,16 +180,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_232646) do
     t.index ["user_id", "friend_id"], name: "index_friendships_on_user_id_and_friend_id", unique: true
     t.index ["user_id"], name: "index_friendships_on_user_id"
     t.check_constraint "user_id != friend_id"
-  end
-
-  create_table "photo_tags", force: :cascade do |t|
-    t.integer "event_picture_id", null: false
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["event_picture_id", "user_id"], name: "index_photo_tags_on_event_picture_id_and_user_id", unique: true
-    t.index ["event_picture_id"], name: "index_photo_tags_on_event_picture_id"
-    t.index ["user_id"], name: "index_photo_tags_on_user_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -260,8 +249,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_232646) do
   add_foreign_key "friendships", "bars"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
-  add_foreign_key "photo_tags", "event_pictures"
-  add_foreign_key "photo_tags", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "reviews", "beers", on_delete: :cascade
   add_foreign_key "reviews", "users"

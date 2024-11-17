@@ -14,6 +14,8 @@ import Bars from './components/Bars';
 import Events from './components/Events';
 import AddAttendance from './components/AddAttendances';
 import Attendances from './components/Attendances';
+import UploadImage from './components/UploadImage';
+import ViewEventPictures from './components/ViewEventPictures';
 import Feed from './components/Feed';
 import { FeedProvider } from './context/FeedContext';
 
@@ -93,6 +95,8 @@ export default function App() {
           <Stack.Screen name="Events" component={Events} />
           <Stack.Screen name="AddAttendance" component={AddAttendance} />
           <Stack.Screen name="Attendances" component={Attendances} />
+          <Stack.Screen name="UploadImage" component={UploadImage} />
+          <Stack.Screen name="ViewEventPictures" component={ViewEventPictures} />
         </Stack.Navigator>
       </NavigationContainer>
     </FeedProvider>

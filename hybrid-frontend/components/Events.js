@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity, Image, Alert, Modal, TextInput, ScrollView } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, TouchableOpacity, Alert, Modal, TextInput } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { API_URL } from '../config';
-import { launchImageLibrary } from 'react-native-image-picker';
-import * as ImagePicker from 'expo-image-picker';
-import EventSummaryGenerator from './EventSummaryGenerator';
+import { getItem } from '../Storage';
+import UploadImage from './UploadImage';
+import ViewEventPictures from './ViewEventPictures';
 
 const Events = () => {
     const route = useRoute();
@@ -15,12 +15,10 @@ const Events = () => {
     const navigation = useNavigation();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [imageUploading, setImageUploading] = useState(false);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
     const [users, setUsers] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const [description, setDescription] = useState('');
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -28,114 +26,48 @@ const Events = () => {
     };
 
     useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const event_url = `${API_URL}/bars/${bar_id}/events`;
-                const response = await axios.get(event_url);
-                const data = response.data;
-
-                if (data.events) {
-                    const eventsWithPictures = data.events.map(event => ({
-                        ...event,
-                        event_pictures: Array.isArray(event.event_pictures) ? event.event_pictures : []
-                    }));
-                    setEvents(eventsWithPictures);
-                } else {
-                    Alert.alert('No hay eventos', 'No se encontraron eventos para este bar.');
-                }
-            } catch (error) {
-                console.error("Error fetching events:", error);
-                Alert.alert('Error', 'No se pudieron cargar los eventos. Por favor, inténtalo más tarde.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const fetchUsers = async () => {
-            try {
-                const users_url = `${API_URL}/users`; // Cambia esto por la URL real para obtener usuarios
-                const response = await axios.get(users_url);
-                setUsers(response.data.users);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-                Alert.alert('Error', 'No se pudieron cargar los usuarios. Por favor, inténtalo más tarde.');
-            }
-        };
-
         fetchEvents();
         fetchUsers();
     }, [bar_id]);
 
-    const handleImageChange = async (event) => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-        if (permissionResult.granted === false) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la galería para seleccionar una imagen.');
-            return;
-        }
-    
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            base64: true,
-            quality: 1,
-        });
-    
-        if (!result.canceled) {
-            const selectedFile = result.assets[0];
-            const fileType = selectedFile.type || 'image/jpeg';
-            const base64Image = `data:${fileType};base64,${selectedFile.base64}`;
-            setSelectedImage({ eventId: event.id, base64Image });
-            setModalVisible(true);
-        } else {
-            console.log('Usuario canceló la selección de imagen');
+    const fetchEvents = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/bars/${bar_id}/events`);
+            if (response.data.events) {
+                setEvents(response.data.events);
+            } else {
+                Alert.alert('No hay eventos', 'No se encontraron eventos para este bar.');
+            }
+        } catch (error) {
+            console.error("Error fetching events:", error);
+            Alert.alert('Error', 'No se pudieron cargar los eventos.');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleCameraCapture = async (event) => {
-        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-        
-        if (permissionResult.granted === false) {
-            Alert.alert('Permiso requerido', 'Se necesita acceso a la cámara para tomar una foto.');
-            return;
-        }
-    
-        const result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            base64: true,
-            quality: 1,
-        });
-    
-        if (!result.canceled) {
-            const selectedFile = result.assets[0];
-            const fileType = selectedFile.type || 'image/jpeg';
-            const base64Image = `data:${fileType};base64,${selectedFile.base64}`;
-            setSelectedImage({ eventId: event.id, base64Image });
-            setModalVisible(true);
-        } else {
-            console.log('Usuario canceló la captura de imagen');
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/users`);
+            setUsers(response.data.users);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            Alert.alert('Error', 'No se pudieron cargar los usuarios.');
         }
     };
-    
 
     const handleUserSelection = (user) => {
-        // Alternar la selección del usuario
-        if (selectedUsers.includes(user)) {
-            setSelectedUsers(prev => prev.filter(u => u !== user)); // Desmarcar si ya está seleccionado
-        } else {
-            setSelectedUsers(prev => [...prev, user]); // Marcar como seleccionado
-        }
+        setSelectedUsers(prev => 
+            prev.includes(user) ? 
+            prev.filter(u => u !== user) : 
+            [...prev, user]
+        );
     };
 
-    const handleConfirmSelection = () => {
-        console.log('Usuarios seleccionados:', selectedUsers);
-        if (selectedImage) {
-            selectedUsers.forEach(user => {
-                handleImageUpload(selectedImage.eventId, selectedImage.base64Image, user);
-            });
-        }
-        setModalVisible(false); // Cierra el modal
-        setSelectedUsers([]); // Limpiar selección
+    const handleConfirmSelection = async () => {
+        // You can perform any necessary actions after confirming user selection
+        setSelectedUsers([]);
+        setDescription('');
     };
 
     const handleCheckIn = (event) => {
@@ -144,45 +76,6 @@ const Events = () => {
 
     const handleViewAttendances = (event) => {
         navigation.navigate('Attendances', { bar_id, event_id: event.id });
-    };
-
-    const handleImageUpload = async (eventId, base64Image, user) => {
-        setImageUploading(true);
-        try {
-            const response = await fetch(`${API_URL}/events/${eventId}/upload_picture`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ image: base64Image, userId: user.id }),
-            });
-
-            const data = await response.json();
-            const LOCAL_URL = `http://192.168.1.94:3000/`;
-            if (response.ok) {
-                const imageUrl = data.url.startsWith('http') ? data.url : `${LOCAL_URL}${data.url}`;
-                setEvents((prevEvents) =>
-                    prevEvents.map((evt) =>
-                        evt.id === eventId ? {
-                            ...evt,
-                            event_pictures: [...evt.event_pictures, { id: data.id, url: imageUrl }]
-                        } : evt
-                    )
-                );
-            } else {
-                console.error('Error al subir la imagen:', data.error);
-                Alert.alert('Error', 'No se pudo subir la imagen. Por favor, inténtalo más tarde.');
-            }
-        } catch (error) {
-            console.error('Error en la solicitud:', error);
-            Alert.alert('Error', 'Error en la carga de la imagen. Por favor, inténtalo más tarde.');
-        } finally {
-            setImageUploading(false);
-        }
-    };
-
-    const handleImageClick = (image) => {
-        Alert.alert("Imagen Clickeada", `ID de la imagen: ${image.id}`);
     };
 
     if (loading) {
@@ -196,118 +89,48 @@ const Events = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Eventos del Bar</Text>
-    
-            {events.length > 0 ? (
-                <FlatList
-                    data={events}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <View style={styles.card}>
-                            <Text style={styles.eventName}>{item.name}</Text>
-                            <Text>Descripción: {item.description}</Text>
-                            <Text>Fecha: {formatDate(item.date)}</Text>
-                            <Text>Hora Inicio: {item.start_date}</Text>
-                            <Text>Hora Fin: {item.end_date}</Text>
-    
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleImageChange(item)} // Seleccionar imagen para el evento
-                            >
-                                <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Subir Imagen'}</Text>
-                            </TouchableOpacity>
-    
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleCameraCapture(item)} // Tomar foto con la cámara
-                            >
-                                <Text style={styles.buttonText}>{imageUploading ? 'Subiendo...' : 'Capturar con cámara'}</Text>
-                            </TouchableOpacity>
-    
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleCheckIn(item)} // Agregar asistencia
-                            >
-                                <Text style={styles.buttonText}>Agregar Asistencia</Text>
-                            </TouchableOpacity>
-    
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => handleViewAttendances(item)} // Ver asistencias
-                            >
-                                <Text style={styles.buttonText}>Ver Asistencias</Text>
-                            </TouchableOpacity>
-    
-                            <EventSummaryGenerator eventId={item.id} />
-    
-                            <View style={styles.imageContainer}>
-                                {Array.isArray(item.event_pictures) && item.event_pictures.length > 0 ? (
-                                    item.event_pictures.map((picture) => (
-                                        <TouchableOpacity key={picture.id} onPress={() => handleImageClick(picture)}>
-                                            <Image
-                                                source={{ uri: picture.url }}
-                                                style={styles.eventImage}
-                                                resizeMode="contain"
-                                                onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)}
-                                            />
-                                        </TouchableOpacity>
-                                    ))
-                                ) : (
-                                    <Text>No hay imágenes disponibles.</Text>
-                                )}
-                            </View>
-                        </View>
-                    )}
-                />
-            ) : (
-                <Text>No hay eventos disponibles.</Text>
-            )}
-    
+
+            <FlatList
+                data={events}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.card}>
+                        <Text style={styles.eventName}>{item.name}</Text>
+                        <Text>Descripción: {item.description}</Text>
+                        <Text>Fecha: {formatDate(item.date)}</Text>
+                        <Text>Hora Inicio: {item.start_date}</Text>
+                        <Text>Hora Fin: {item.end_date}</Text>
+
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => handleCheckIn(item)} // Agregar asistencia
+                        >
+                            <Text style={styles.buttonText}>Agregar Asistencia</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => handleViewAttendances(item)} // Ver asistencias
+                        >
+                            <Text style={styles.buttonText}>Ver Asistencias</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate('UploadImage', { event_id: item.id })} 
+                        >
+                            <Text style={styles.buttonText}>Galería de Imágenes y Subidas</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            />
+
             <Button
                 title="Volver a Bares"
                 color="#A020F0"
                 onPress={() => navigation.goBack()}
             />
-    
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalBackdrop}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Selecciona Usuarios</Text>
-                        
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Buscar usuarios..."
-                            value={searchText}
-                            onChangeText={setSearchText}
-                        />
-    
-                        <FlatList
-                            data={users.filter(user => user.handle.toLowerCase().includes(searchText.toLowerCase()))}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    onPress={() => handleUserSelection(item)} 
-                                    style={[styles.userItem, selectedUsers.includes(item) && styles.selectedUser]}
-                                >
-                                    <Text>{item.handle}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
-    
-                        <View style={styles.modalButtonContainer}>
-                            <Button title="Confirmar Selección" onPress={handleConfirmSelection} />
-                            <Button title="Cerrar" onPress={() => setModalVisible(false)} />
-                        </View>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
-    
 };
 
 const styles = StyleSheet.create({
@@ -350,22 +173,22 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
     },
-    imageContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginTop: 10,
-    },
-    eventImage: {
-        width: 100,
-        height: 100,
-        margin: 5,
-    },
-    modalContainer: {
+    modalBackdrop: {
         flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
         padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     searchInput: {
         width: '100%',
@@ -383,55 +206,17 @@ const styles = StyleSheet.create({
     selectedUser: {
         backgroundColor: '#D3D3D3',
     },
-    modalBackdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modalContent: {
-        width: '90%',
-        maxHeight: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 5,
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        textAlign: 'center',
-    },
-    searchInput: {
+    descriptionInput: {
         width: '100%',
-        borderColor: '#ddd',
+        borderColor: 'gray',
         borderWidth: 1,
-        borderRadius: 5,
         padding: 10,
         marginBottom: 10,
-    },
-    userListContainer: {
-        maxHeight: 250,
-        marginBottom: 20,
-    },
-    userItem: {
-        padding: 10,
-        backgroundColor: '#f9f9f9',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    selectedUser: {
-        backgroundColor: '#e0e0e0',
     },
     modalButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
 });
-
 
 export default Events;

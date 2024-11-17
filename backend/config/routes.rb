@@ -25,10 +25,14 @@ Rails.application.routes.draw do
         end
       end
       resources :events do
-        post 'upload_picture', on: :member
         post 'generate_summary', on: :member  # Ruta para generar el resumen
         get 'summary', on: :member            # Ruta para ver el resumen
         resources :attendances, only: [:create, :index]
+        resources :event_pictures, only: [:create] do
+          collection do
+            post ':user_id', to: 'event_pictures#create', as: :create_with_user
+          end
+        end
       end
       resources :reviews, only: [:create, :update, :destroy]
       resources :beers do
@@ -41,11 +45,6 @@ Rails.application.routes.draw do
           post :friendships, action: :create_friendship
         end
         resources :friendships, only: [:index, :create]
-      end
-      resources :event_pictures do
-        member do
-          post 'tag_user'
-        end
       end
     end
   end
