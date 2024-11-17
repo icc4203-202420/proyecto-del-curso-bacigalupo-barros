@@ -87,7 +87,7 @@ const UsersSearch = () => {
                     contentContainerStyle={{ paddingBottom: 20 }} 
                 />
             ) : (
-                <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+                <ActivityIndicator size={48} color="#0000ff" style={{ marginTop: 20 }} />
             )}
         </ScrollView>
     );

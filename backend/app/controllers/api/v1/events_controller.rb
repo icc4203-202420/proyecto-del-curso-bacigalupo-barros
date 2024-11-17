@@ -118,16 +118,24 @@ class API::V1::EventsController < ApplicationController
       render json: { error: 'Evento no encontrado' }, status: :not_found and return
     end
 
-    image_data = params[:image].sub(/^data:image\/\w+;base64,/, '')
-    
-    begin
-      decoded_data = Base64.decode64(image_data)
-      unique_filename = "#{SecureRandom.uuid}.jpg"
+    # Asegurarse de que los datos de imagen están presentes
+    image_data = params[:image]
+    if image_data.blank?
+      render json: { error: 'No se ha proporcionado ninguna imagen.' }, status: :unprocessable_entity and return
+    end
 
+    # Decodificar la imagen usando el método que ya tienes
+    decoded_image = decode_image(image_data)
+    if decoded_image.nil?
+      render json: { error: 'Imagen inválida' }, status: :unprocessable_entity and return
+    end
+
+    # Crear el blob y adjuntar la imagen al evento
+    begin
       blob = ActiveStorage::Blob.create_and_upload!(
-        io: StringIO.new(decoded_data),
-        filename: unique_filename,
-        content_type: 'image/jpeg'
+        io: decoded_image[:io],
+        filename: decoded_image[:filename],
+        content_type: decoded_image[:content_type]
       )
 
       event.event_pictures.attach(blob)
@@ -142,6 +150,7 @@ class API::V1::EventsController < ApplicationController
       render json: { error: 'Error al subir la imagen. Por favor, intenta de nuevo.' }, status: :unprocessable_entity
     end
   end
+
 
   private
 

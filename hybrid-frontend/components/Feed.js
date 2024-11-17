@@ -10,6 +10,7 @@ const FeedItem = ({ item }) => {
   const navigation = useNavigation();
 
   const handlePress = () => {
+    console.log('Navigating to BeerDetails with ID:', item.content.beer_id); // Depuración
     navigation.navigate('BeerDetails', { id: item.content.beer_id });
   };
 
@@ -90,7 +91,7 @@ const Feed = () => {
   if (loading && !refreshing) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A020F0" />
+        <ActivityIndicator size={48} color="#A020F0" />
       </View>
     );
   }
@@ -109,7 +110,12 @@ const Feed = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          onEndReached={() => hasMore && fetchFeed()}
+          onEndReached={() => {
+            if (hasMore) {
+              console.log('Fetching more feed items...');
+              fetchFeed();
+            }
+          }}
           onEndReachedThreshold={0.5}
         />
       )}

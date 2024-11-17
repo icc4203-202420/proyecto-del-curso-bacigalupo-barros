@@ -39,7 +39,7 @@ const Bars = ({ navigation }) => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#A020F0" />
+                <ActivityIndicator size={48} color="#A020F0" />
             </View>
         );
     }
