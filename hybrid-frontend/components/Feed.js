@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, RefreshControl, Image } from 'react-native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useNavigation } from '@react-navigation/native';
@@ -9,32 +9,68 @@ import { saveItem, getItem } from '../Storage';
 const FeedItem = ({ item }) => {
   const navigation = useNavigation();
 
-  const handlePress = () => {
-    console.log('Navigating to BeerDetails with ID:', item.content.beer_id); // Depuración
+  const handleBeerPress = () => {
+    console.log('Navigating to BeerDetails with ID:', item.content.beer_id);
     navigation.navigate('BeerDetails', { id: item.content.beer_id });
+  };
+  const handleEventPress = () => {
+    console.log('Navigating to Bar with event ID:', item.content.bar_id);
+    navigation.navigate('Bars', { id: item.content.bar_id });
+  };
+
+  useEffect(() => {
+    console.log('Feed item:', item);
+    console.log('Content:', item.content);
+  }, [item]);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
   };
 
   return (
     <View style={styles.feedItem}>
-      <View style={styles.userInfoContainer}>
-        <Text style={styles.userName}>{item.user.first_name} {item.user.last_name}</Text>
-        <Text style={styles.handle}>@{item.user.handle}</Text>
-      </View>
-      
-      <View style={styles.reviewContent}>
-        <Text onPress={handlePress} style={styles.beerName}>
-          {item.content.beer_name}
-        </Text>
-        <Text style={styles.rating}>Rating: {item.content.rating}/5</Text>
-        <Text style={styles.reviewText}>{item.content.text}</Text>
-      </View>
-      
-      <Text style={styles.timestamp}>
-        {new Date(item.created_at).toLocaleDateString()}
-      </Text>
+      {item.content && (
+        <>
+          {/* Reseña de la cerveza */}
+          {item.content.beer_id && (
+            <View style={styles.reviewContent}>
+              <Text style={styles.beerName} onPress={handleBeerPress}>
+                Beer: {item.content.beer_name}
+              </Text>
+              <Text style={styles.beerName}>Posted By: @{item.user.handle}</Text>
+              <Text style={styles.rating}>Rating: {item.content.rating}/5</Text>
+              <Text style={styles.reviewText}>{item.content.text}</Text>
+            </View>
+          )}
+
+          {/* Imagen del evento */}
+          {item.content.event_picture_id && (
+            <View style={styles.eventContent}>
+              <Text style={styles.beerName} onPress={handleEventPress}>
+              Event: {item.content.event_name}
+              </Text>
+              <Text style={styles.beerName}>Bar: {item.content.bar_name}</Text>
+              <Text style={styles.beerName}>Posted By: @{item.user.handle}</Text>
+              <Image
+                source={{ uri: item.content.image_url }}
+                style={styles.eventImage}
+                onError={(error) => console.error('Error loading image:', error.nativeEvent.error)}
+              />
+              <Text style={styles.reviewText}>{item.content.description}</Text>
+            </View>
+          )}
+
+          {/* Fecha de publicación */}
+          {item.created_at && (
+            <Text style={styles.timestamp}>Posted on: {formatDate(item.created_at)}</Text>
+          )}
+        </>
+      )}
     </View>
   );
 };
+
 
 const Feed = () => {
   const [feedItems, setFeedItems] = useState([]);
@@ -154,19 +190,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  userInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  userName: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  handle: {
-    color: '#666',
-    marginLeft: 8,
-  },
   reviewContent: {
     marginVertical: 8,
   },
@@ -185,10 +208,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
-  timestamp: {
-    fontSize: 12,
-    color: '#999',
+  eventContent: {
     marginTop: 8,
+  },
+  eventDescription: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  eventImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+  },
+  timestamp: {
+    marginTop: 8,
+    fontSize: 12,
+    color: '#aaa',
   },
 });
 

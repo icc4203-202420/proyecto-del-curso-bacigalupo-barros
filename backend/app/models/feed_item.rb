@@ -2,6 +2,7 @@
 class FeedItem < ApplicationRecord
     belongs_to :user
     belongs_to :reviewable, polymorphic: true
+    belongs_to :event_picture, optional: true
   
     validates :activity_type, presence: true
     
