@@ -50,23 +50,6 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to BARMAN!</Text>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Enviar Notificación"
-          onPress={sendNotification} // Llama a sendNotification al presionar
-          color="#A020F0"
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="View Beers"
-          onPress={() => navigation.navigate('Beers')}
-          color="#A020F0"
-        />
-      </View>
-
       <View style={styles.buttonContainer}>
         <LogOut onLogout={handleLogout} />
       </View>

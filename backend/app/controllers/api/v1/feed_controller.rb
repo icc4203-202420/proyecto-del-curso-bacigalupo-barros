@@ -53,6 +53,7 @@ class API::V1::FeedController < ApplicationController
           content: {
             beer_id: feed_item.reviewable.beer.id,
             beer_name: feed_item.reviewable.beer.name,
+            global_rating: feed_item.reviewable.beer.avg_rating,
             rating: feed_item.reviewable.rating,
             text: feed_item.reviewable.text
           },

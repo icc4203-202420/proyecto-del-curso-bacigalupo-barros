@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Button, Text, StyleSheet, Image, TextInput } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';  // Usando expo-image-picker para seleccionar imágenes
+import * as ImagePicker from 'expo-image-picker'; // Usando expo-image-picker para seleccionar imágenes
 import { getItem } from '../Storage';
 import { API_URL } from '../config';
 
 const UploadImage = ({ route, navigation }) => {
     const { event_id } = route.params;  
     const [image, setImage] = useState(null);
-    const [description, setDescription] = useState('')
+    const [description, setDescription] = useState('');
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -18,7 +18,7 @@ const UploadImage = ({ route, navigation }) => {
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);  // Guardamos la URI de la imagen seleccionada
+            setImage(result.assets[0].uri); // Guardamos la URI de la imagen seleccionada
         }
     };
 
@@ -32,17 +32,15 @@ const UploadImage = ({ route, navigation }) => {
         }
     
         const formData = new FormData();
-        const user_id = await getItem('userId'); // Asegúrate de obtener el user_id correcto (podría ser un valor de contexto o del perfil de usuario)
+        const user_id = await getItem('userId'); // Asegúrate de obtener el user_id correcto
         console.log("User ID obtenido:", user_id);
         const storedToken = await getItem('authToken');
         const token = storedToken ? storedToken.replace(/"/g, '') : null;
     
         // Agregar la imagen al FormData correctamente como archivo
         const uri = image;
-        const fileType = uri.split('.').pop();  // Obtenemos la extensión del archivo
-        console.log(fileType)
-        const name = uri.split('/').pop();     // Obtenemos el nombre del archivo desde la URI
-        console.log(name)
+        const fileType = uri.split('.').pop(); // Obtenemos la extensión del archivo
+        const name = uri.split('/').pop(); // Obtenemos el nombre del archivo desde la URI
 
         formData.append('user_id', user_id);
         formData.append('event_picture[image]', {
@@ -51,8 +49,9 @@ const UploadImage = ({ route, navigation }) => {
             name: name,
         });
     
-        // Si deseas enviar una descripción junto con la imagen, agrega otro campo:
-        formData.append('event_picture[description]', 'Descripción de la Imagen');
+        // Usar la descripción ingresada por el usuario
+        formData.append('event_picture[description]', description);
+    
         // Realizar la solicitud POST a la API
         try {
             const response = await fetch(`${API_URL}/events/${event_id}/event_pictures`, {
@@ -65,16 +64,14 @@ const UploadImage = ({ route, navigation }) => {
                 body: formData,
             });
             
-            // Verificar si la respuesta es válida
-            const responseText = await response.text();  // Usamos .text() para leer la respuesta como texto
+            const responseText = await response.text(); // Leer la respuesta como texto
             console.log('Respuesta de la API:', responseText);
     
             if (response.ok) {
                 const responseJson = JSON.parse(responseText);
                 console.log('Imagen subida exitosamente:', responseJson.message);
             } else {
-                // Si la respuesta no es OK, mostramos el error
-                const responseJson = JSON.parse(responseText);  // Parsear la respuesta
+                const responseJson = JSON.parse(responseText);
                 console.error('Error al subir la imagen:', responseJson.errors || 'No se especificaron errores');
             }
         } catch (error) {
@@ -89,9 +86,15 @@ const UploadImage = ({ route, navigation }) => {
             {image && (
                 <>
                     <Image source={{ uri: image }} style={styles.image} />
-                    <Text style={styles.uriText}>{image}</Text> 
+                    {/*<Text style={styles.uriText}>{image}</Text>*/}
                 </>
             )}
+            <TextInput
+                style={styles.input}
+                placeholder="Ingresa una descripción"
+                value={description}
+                onChangeText={setDescription}
+            />
             <Button title="Subir Imagen" onPress={handleUploadImage} />
             <Button
                 title="Ver Imágenes del Evento"

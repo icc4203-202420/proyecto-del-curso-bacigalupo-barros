@@ -56,44 +56,44 @@ export function FeedProvider({ children }) {
       }
   
       // Verificación en el API antes de proceder con la WebSocket
-      const fetchPosts = async () => {
+      const fetchFeed = async () => {
         dispatch({ type: 'LOADING' });
         try {
-          const response = await fetch(`${API_URL}/posts`, {
+          const response = await fetch(`${API_URL}/feed`, { 
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
           const data = await response.json();
-          console.log('Posts fetched:', data); 
-          dispatch({ type: 'SET_POSTS', payload: data });
+          console.log('Feed items fetched:', data); 
+          dispatch({ type: 'SET_POSTS', payload: data.feed_items });
         } catch (error) {
-          console.error('Error fetching posts:', error);
+          console.error('Error fetching feed:', error);
           dispatch({ type: 'ERROR', payload: error.message });
         }
       };
   
-      await fetchPosts();
+      await fetchFeed();
   
       // Establece la conexión WebSocket
       console.log('Setting up WebSocket...');
       const cable = createConsumer(`${CABLE_URL}?user_id=${userId}&auth_token=${token}`);
+      console.log('CABLE: ', cable)
       const subscription = cable.subscriptions.create(
+        { channel: 'FeedChannel' },
         {
-          channel: 'FeedChannel',
-        },
-        {
-          received: (data) => {
-            console.log('WebSocket received:', data);
+          connected() {
+            console.log('Successfully connected to FeedChannel');
+          },
+          received(data) {
+            console.log('Received data on FeedChannel:', data);  // Este log es crucial para verificar si el canal recibe los datos
             dispatch({ type: 'ADD_POST', payload: data.post });
           },
-          disconnected: (reason) => {
-            if (reason === 'unauthorized') {
-              console.log('Unauthorized: Disconnecting WebSocket.');
-            }
-          }
+          disconnected(reason) {
+            console.log('Disconnected from FeedChannel. Reason:', reason);  // Aquí se capturan los detalles de la desconexión
+          },
         }
-      );
+      );      
   
       return () => {
         subscription.unsubscribe();
