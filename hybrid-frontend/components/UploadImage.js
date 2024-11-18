@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Button, Text, StyleSheet, Image, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; // Usando expo-image-picker para seleccionar imágenes
 import { getItem } from '../Storage';
@@ -9,6 +9,24 @@ const UploadImage = ({ route, navigation }) => {
     const [image, setImage] = useState(null);
     const [description, setDescription] = useState('');
 
+    // Solicitar permisos para la galería y la cámara
+    useEffect(() => {
+        const requestPermissions = async () => {
+            const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+
+            if (mediaStatus !== 'granted') {
+                alert('Se necesitan permisos para acceder a la galería');
+            }
+            if (cameraStatus !== 'granted') {
+                alert('Se necesitan permisos para acceder a la cámara');
+            }
+        };
+
+        requestPermissions();
+    }, []);
+
+    // Función para seleccionar imagen desde la galería
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -19,6 +37,19 @@ const UploadImage = ({ route, navigation }) => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri); // Guardamos la URI de la imagen seleccionada
+        }
+    };
+
+    // Función para tomar una foto con la cámara
+    const takePhoto = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri); // Guardamos la URI de la foto tomada
         }
     };
 
@@ -82,7 +113,13 @@ const UploadImage = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Sube una Imagen para el Evento</Text>
+            
+            {/* Botón para seleccionar imagen desde la galería */}
             <Button title="Seleccionar Imagen" onPress={pickImage} />
+
+            {/* Botón para tomar foto con la cámara */}
+            <Button title="Tomar Foto" onPress={takePhoto} />
+            
             {image && (
                 <>
                     <Image source={{ uri: image }} style={styles.image} />
