@@ -17,7 +17,6 @@ import Attendances from './components/Attendances';
 import UploadImage from './components/UploadImage';
 import ViewEventPictures from './components/ViewEventPictures';
 import Feed from './components/Feed';
-import { FeedProvider } from './context/FeedContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -84,7 +83,7 @@ export default function App() {
   };
 
   return (
-    <FeedProvider>
+
       <NavigationContainer>
         <Stack.Navigator initialRouteName={isLoggedIn ? "Home" : "Login"}>
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -99,7 +98,6 @@ export default function App() {
           <Stack.Screen name="ViewEventPictures" component={ViewEventPictures} />
         </Stack.Navigator>
       </NavigationContainer>
-    </FeedProvider>
 
   );
 }

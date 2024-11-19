@@ -8,6 +8,8 @@ import { API_URL } from '../config';
 import { getItem } from '../Storage';
 import UploadImage from './UploadImage';
 import ViewEventPictures from './ViewEventPictures';
+import EventSummaryGenerator from './EventSummaryGenerator';
+
 
 const Events = () => {
     const route = useRoute();
@@ -120,6 +122,9 @@ const Events = () => {
                         >
                             <Text style={styles.buttonText}>Galería de Imágenes y Subidas</Text>
                         </TouchableOpacity>
+
+                        <EventSummaryGenerator eventId={item.id} />
+                        
                     </View>
                 )}
             />

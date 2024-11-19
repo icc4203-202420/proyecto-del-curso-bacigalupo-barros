@@ -3,6 +3,7 @@ import { View, Text, FlatList, ActivityIndicator, StyleSheet, RefreshControl, Im
 import axios from 'axios';
 import { createConsumer } from '@rails/actioncable';
 import { API_URL, CABLE_URL } from '../config';
+import { Picker } from '@react-native-picker/picker';
 import { getItem } from '../Storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,15 +14,11 @@ const FeedItem = ({ item }) => {
     console.log('Navigating to BeerDetails with ID:', item.content.beer_id);
     navigation.navigate('BeerDetails', { id: item.content.beer_id });
   };
+
   const handleEventPress = () => {
     console.log('Navigating to Bar with event ID:', item.content.bar_id);
     navigation.navigate('Bars', { id: item.content.bar_id });
   };
-
-  useEffect(() => {
-    console.log('Feed item:', item);
-    console.log('Content:', item.content);
-  }, [item]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -49,7 +46,7 @@ const FeedItem = ({ item }) => {
           {item.content.event_picture_id && (
             <View style={styles.eventContent}>
               <Text style={styles.beerName} onPress={handleEventPress}>
-              Event: {item.content.event_name}
+                Event: {item.content.event_name}
               </Text>
               <Text style={styles.beerName}>Bar: {item.content.bar_name}</Text>
               <Text style={styles.beerName}>Posted By: @{item.user.handle}</Text>
@@ -80,6 +77,7 @@ const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [cable, setCable] = useState(null);
   const [subscription, setSubscription] = useState(null);
+  const [filter, setFilter] = useState('all'); // Estado para el filtro
 
   const fetchFeed = async (resetOffset = false) => {
     try {
@@ -92,19 +90,18 @@ const Feed = () => {
       }
 
       const newOffset = resetOffset ? 0 : offset;
-      console.log('Fetching feed with offset:', newOffset);
-      
+      console.log('Fetching feed with offset:', newOffset, 'filter:', filter);
+
       const response = await axios.get(`${API_URL}/feed`, {
-        params: { offset: newOffset },
+        params: { offset: newOffset, filter }, // Añadir el filtro a la solicitud
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
-      console.log('Feed response:', response.data);
+
       const { feed_items, has_more } = response.data;
-      
-      setFeedItems(prevItems => 
+
+      setFeedItems(prevItems =>
         resetOffset ? feed_items : [...prevItems, ...feed_items]
       );
       setHasMore(has_more);
@@ -120,24 +117,21 @@ const Feed = () => {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchFeed(true);
-  }, []);
+  }, [filter]); // Reaccionar a los cambios de filtro
 
   useEffect(() => {
     const initializeFeed = async () => {
       const userId = await getItem('userId');
       const storedToken = await getItem('authToken');
       const token = storedToken ? storedToken.replace(/"/g, '') : null;
-      console.log('User ID:', userId, 'Token:', token);
-  
+
       if (!token) {
         console.error('No token found, user is not authorized.');
         return;
       }
 
-      // Establece la conexión WebSocket
-      console.log('Setting up WebSocket...');
       const cable = createConsumer(`${CABLE_URL}?user_id=${userId}&auth_token=${token}`);
-      console.log('CABLE: ', cable);
+      console.log(cable);
       const subscription = cable.subscriptions.create(
         { channel: 'FeedChannel' },
         {
@@ -145,8 +139,7 @@ const Feed = () => {
             console.log('Successfully connected to FeedChannel');
           },
           received(data) {
-            console.log('Received data on FeedChannel:', data);
-            setFeedItems(prevItems => [data.post, ...prevItems]); // Añadir el nuevo post a la lista de posts
+            setFeedItems(prevItems => [data.post, ...prevItems]);
           },
           disconnected(reason) {
             console.log('Disconnected from FeedChannel. Reason:', reason);
@@ -159,20 +152,15 @@ const Feed = () => {
 
     initializeFeed();
 
-    // Cleanup: Desconectar la suscripción al salir
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-      if (cable) {
-        cable.disconnect();
-      }
+      if (subscription) subscription.unsubscribe();
+      if (cable) cable.disconnect();
     };
   }, []);
 
   useEffect(() => {
-    fetchFeed();
-  }, []);
+    fetchFeed(true);
+  }, [filter]); // Refetch feed cuando cambia el filtro
 
   if (loading && !refreshing) {
     return (
@@ -184,6 +172,19 @@ const Feed = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterLabel}>Filter:</Text>
+        <Picker
+          selectedValue={filter}
+          onValueChange={(value) => setFilter(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="All" value="all" />
+          <Picker.Item label="Beers" value="beers" />
+          <Picker.Item label="Events" value="events" />
+        </Picker>
+      </View>
+
       {feedItems.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>No hay actividad reciente</Text>
@@ -197,10 +198,7 @@ const Feed = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           onEndReached={() => {
-            if (hasMore) {
-              console.log('Fetching more feed items...');
-              fetchFeed();
-            }
+            if (hasMore) fetchFeed();
           }}
           onEndReachedThreshold={0.5}
         />
@@ -274,6 +272,20 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 12,
     color: '#aaa',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 2,
+    backgroundColor: '#fff',
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 8,
+  },
+  picker: {
+    flex: 1,
   },
 });
 

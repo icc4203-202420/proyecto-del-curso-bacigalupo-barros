@@ -4,7 +4,9 @@ module ApplicationCable
     identified_by :current_user
 
     def connect
+      Rails.logger.info "Attempting to connect with user_id: #{request.params[:user_id]}"
       self.current_user = find_verified_user
+      Rails.logger.info "Connected user: #{current_user.inspect}" if current_user
     end
 
     private
